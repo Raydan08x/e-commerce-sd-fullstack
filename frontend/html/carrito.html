@@ -14,7 +14,7 @@
     <link rel="stylesheet" href="../src/css/footer.css?v=20260715-1">
     <link rel="stylesheet" href="../src/css/particles.css?v=20260715-3">
     <link rel="stylesheet" href="../src/css/components/Preloader.css">
-    <link rel="stylesheet" href="../src/css/style-carrito.css?v=20260715-2">
+    <link rel="stylesheet" href="../src/css/style-carrito.css?v=20260810-3">
     <link rel="stylesheet" href="../src/css/typography.css?v=20260715-1">
 </head>
 
@@ -28,10 +28,10 @@
         </header>
 
         <div class="row g-4">
-            <div class="col-lg-8">
+            <div class="col-xl-7">
                 <div id="contenedorCarrito"></div>
             </div>
-            <div class="col-lg-4">
+            <div class="col-xl-5">
                 <section class="carrito-total checkout-shell" id="checkoutShell">
                     <div class="checkout-encabezado">
                         <span id="checkoutPasoTexto">Paso 1 de 2</span>
@@ -59,39 +59,45 @@
                                     </div>
                                 </header>
                                 <form id="formEnvio">
-                                    <div class="row g-2">
-                                        <div class="col-md-6">
+                                    <div class="row g-3 checkout-form-grid">
+                                        <div class="col-md-6 checkout-field">
                                             <label for="destinatarioNombre" class="form-label">Nombre</label>
                                             <input id="destinatarioNombre" class="form-control" required maxlength="150">
                                         </div>
-                                        <div class="col-md-6">
+                                        <div class="col-md-6 checkout-field">
                                             <label for="destinatarioApellido" class="form-label">Apellido</label>
                                             <input id="destinatarioApellido" class="form-control" maxlength="150">
                                         </div>
-                                        <div class="col-12">
+                                        <div class="col-12 checkout-field">
                                             <label for="destinatarioEmail" class="form-label">Correo</label>
                                             <input id="destinatarioEmail" type="email" class="form-control" required>
                                         </div>
-                                        <div class="col-12">
+                                        <div class="col-12 checkout-field">
                                             <label for="destinatarioTelefono" class="form-label">Teléfono</label>
                                             <input id="destinatarioTelefono" type="tel" class="form-control"
                                                    pattern="\+?[0-9]{7,15}" required>
                                         </div>
-                                        <div class="col-12">
+                                        <div class="col-12 checkout-field">
                                             <label for="direccionEnvio" class="form-label">Dirección de entrega</label>
                                             <input id="direccionEnvio" class="form-control" required maxlength="500">
                                         </div>
-                                        <div class="col-12">
-                                            <label for="destinoCodigo" class="form-label">Código DANE del municipio</label>
-                                            <div class="input-group">
-                                                <input id="destinoCodigo" class="form-control" inputmode="numeric"
-                                                       pattern="[0-9]{5,12}" placeholder="Ej. Bogotá: 11001000" required>
-                                                <button id="btnValidarDestino" type="button"
-                                                        class="btn btn-outline-light">Validar</button>
+                                        <div class="col-12 checkout-field municipio-field">
+                                            <label for="municipioBusqueda" class="form-label">Municipio de entrega</label>
+                                            <div class="municipio-buscador">
+                                                <i class="bi bi-search" aria-hidden="true"></i>
+                                                <input id="municipioBusqueda" class="form-control" type="search"
+                                                       autocomplete="off" placeholder="Ej. Zipaquirá"
+                                                       aria-autocomplete="list" aria-controls="municipioResultados"
+                                                       aria-expanded="false" required>
                                             </div>
-                                            <small id="municipioSeleccionado" class="form-text"></small>
+                                            <input id="destinoCodigo" type="hidden">
+                                            <div id="municipioResultados" class="municipio-resultados"
+                                                 role="listbox" aria-label="Municipios encontrados" hidden></div>
+                                            <small id="municipioSeleccionado" class="form-text">
+                                                Escribe al menos dos letras y selecciona tu municipio.
+                                            </small>
                                         </div>
-                                        <div class="col-12">
+                                        <div class="col-12 checkout-field">
                                             <label for="notasPedido" class="form-label">Notas (opcional)</label>
                                             <textarea id="notasPedido" class="form-control" rows="2" maxlength="2000"></textarea>
                                         </div>
@@ -167,7 +173,7 @@
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <script type="module" src="../src/js/app.js?v=20260715-10"></script>
-    <script type="module" src="../src/js/carrito.js?v=20260810-4"></script>
+    <script type="module" src="../src/js/carrito.js?v=20260810-5"></script>
     <script type="module" src="../src/js/boldPayment.js?v=20260715-3"></script>
 
 </body>

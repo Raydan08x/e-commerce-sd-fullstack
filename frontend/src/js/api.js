@@ -1,6 +1,6 @@
 const ES_LOCAL = ["localhost", "127.0.0.1"].includes(window.location.hostname);
 const API_POR_DEFECTO = ES_LOCAL
-    ? "http://localhost:8080/api"
+    ? `http://${window.location.hostname}:8080/api`
     : `${window.location.origin}/api`;
 const API_BASE_URL = String(
     window.SIERRA_DORADA_API_URL || API_POR_DEFECTO
@@ -157,8 +157,8 @@ export const formulariosApi = {
 };
 
 export const enviosApi = {
-    ubicaciones: codigo => api(
-        `/envios/ubicaciones${codigo ? `?codigo=${encodeURIComponent(codigo)}` : ""}`,
+    ubicaciones: consulta => api(
+        `/envios/ubicaciones${consulta ? `?q=${encodeURIComponent(consulta)}` : ""}`,
         { autenticado: false }
     ),
     cotizar: datos => api("/envios/cotizaciones", {

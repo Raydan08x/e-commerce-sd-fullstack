@@ -1,8 +1,9 @@
 // Componente para mostrar el modal premium de detalles de un producto.
 
 export class ProductDetailsModal {
-    constructor() {
+    constructor({ onAdd } = {}) {
         this.IMAGEN_PLACEHOLDER = "https://placehold.co/600x400/222223/B3A269?text=Imagen+Pendiente";
+        this.onAdd = typeof onAdd === 'function' ? onAdd : null;
     }
 
     normalizarImagenes(producto) {
@@ -75,18 +76,19 @@ export class ProductDetailsModal {
         }
 
         const modalHtml = `
-            <div class="modal fade" id="modalDetallesProducto" tabindex="-1" aria-labelledby="modalDetallesProductoLabel" aria-hidden="true">
-                <div class="modal-dialog modal-lg modal-dialog-centered">
-                    <div class="modal-content bg-dark text-light border-secondary">
-                        <div class="modal-header border-secondary">
+            <div class="modal fade producto-modal" id="modalDetallesProducto" tabindex="-1" aria-labelledby="modalDetallesProductoLabel" aria-hidden="true">
+                <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable">
+                    <div class="modal-content producto-modal__contenido">
+                        <div class="modal-header producto-modal__encabezado">
                             <h5 class="modal-title producto-modal__titulo" id="modalDetallesProductoLabel">
-                                ${producto.name} - Detalle Premium
+                                <small>Selección Sierra Dorada</small>
+                                ${producto.name}
                             </h5>
-                            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Cerrar"></button>
                         </div>
-                        <div class="modal-body p-4">
-                            <div class="row">
-                                <div class="col-md-5 mb-3 text-center">
+                        <div class="modal-body producto-modal__cuerpo">
+                            <div class="row g-4">
+                                <div class="col-lg-5 text-center">
                                     ${modalImagenHtml}
                                     ${producto.colorHex ? `
                                         <div class="d-flex align-items-center justify-content-center gap-2 mb-3">
@@ -102,7 +104,7 @@ export class ProductDetailsModal {
                                         ${producto.temperature ? `<p class="mb-0 producto-modal__texto"><strong>Temperatura:</strong> ${producto.temperature}</p>` : ''}
                                     </div>
                                 </div>
-                                <div class="col-md-7">
+                                <div class="col-lg-7 producto-modal__informacion">
                                     ${producto.inspiration ? `
                                         <h5 class="producto-modal__subtitulo" style="font-style: italic;">"${producto.inspiration}"</h5>
                                     ` : ''}
@@ -141,9 +143,18 @@ export class ProductDetailsModal {
                                 </div>
                             </div>
                         </div>
-                        <div class="modal-footer border-secondary">
-                            <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cerrar</button>
-                            <button type="button" class="btn btn-dorado"><i class="bi bi-cart-plus"></i> Agregar al Carrito</button>
+                        <div class="modal-footer producto-modal__pie">
+                            <div>
+                                <span class="producto-modal__precio">${precioFormateado}</span>
+                                <small>${Number(producto.stock || 0) > 0 ? `${producto.stock} disponible(s)` : 'Producto agotado'}</small>
+                            </div>
+                            <div class="producto-modal__acciones">
+                                <button type="button" class="btn producto-modal__cerrar" data-bs-dismiss="modal">Cerrar</button>
+                                <button type="button" id="btnAgregarProductoModal" class="btn btn-dorado producto-modal__agregar"
+                                    ${Number(producto.stock || 0) <= 0 ? 'disabled' : ''}>
+                                    <i class="bi bi-cart-plus"></i> Agregar al carrito
+                                </button>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -153,6 +164,11 @@ export class ProductDetailsModal {
         document.body.insertAdjacentHTML('beforeend', modalHtml);
         const modalElement = document.getElementById('modalDetallesProducto');
         const bModal = new bootstrap.Modal(modalElement);
+        modalElement.querySelector('#btnAgregarProductoModal')?.addEventListener('click', () => {
+            this.onAdd?.(producto);
+            bModal.hide();
+        });
+        modalElement.addEventListener('hidden.bs.modal', () => modalElement.remove(), { once: true });
         bModal.show();
     }
 }

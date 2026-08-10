@@ -5,6 +5,9 @@ import com.sierra_dorada.model.Rol;
 import com.sierra_dorada.model.Usuario;
 import com.sierra_dorada.repository.UsuarioRepository;
 import com.sierra_dorada.security.JwtService;
+import com.sierra_dorada.service.MiPaqueteClient;
+import java.util.List;
+import java.util.Map;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -21,6 +24,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.mockito.Mockito.clearInvocations;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 import org.mockito.ArgumentCaptor;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -46,9 +50,34 @@ class AuthIntegrationTests {
     @MockitoBean
     private JavaMailSender correo;
 
+    @MockitoBean
+    private MiPaqueteClient miPaquete;
+
     @Test
     void ejecutaConJava21() {
         assertEquals(21, Runtime.version().feature());
+    }
+
+    @Test
+    void buscaMunicipioPorNombreSinExponerElCatalogoCompleto() throws Exception {
+        when(miPaquete.obtenerUbicaciones()).thenReturn(List.of(
+            Map.of("locationName", "ZIPAQUIRÁ", "departmentOrStateName", "CUNDINAMARCA",
+                "locationCode", "25899000"),
+            Map.of("locationName", "ZIPACÓN", "departmentOrStateName", "CUNDINAMARCA",
+                "locationCode", "25898000"),
+            Map.of("locationName", "ZIPAQUIRÁ", "departmentOrStateName", "CUNDINAMARCA",
+                "locationCode", "25899000")));
+
+        mvc.perform(get("/api/envios/ubicaciones").param("q", "zipaquirá"))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.length()").value(1))
+            .andExpect(jsonPath("$[0].nombre").value("ZIPAQUIRÁ"))
+            .andExpect(jsonPath("$[0].departamento").value("CUNDINAMARCA"))
+            .andExpect(jsonPath("$[0].codigo").value("25899000"));
+
+        mvc.perform(get("/api/envios/ubicaciones").param("q", "z"))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.length()").value(0));
     }
 
     @Test

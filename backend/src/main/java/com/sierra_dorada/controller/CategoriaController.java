@@ -16,6 +16,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.Caching;
 
 @RestController
 @RequestMapping("/api/categorias")
@@ -27,22 +30,32 @@ public class CategoriaController {
     }
 
     @GetMapping
+    @Cacheable("categorias")
     public List<Categoria> listar() {
         return repositorio.findAll();
     }
 
     @GetMapping("/{id}")
+    @Cacheable(value = "categorias", key = "#id")
     public Categoria obtener(@PathVariable Integer id) {
         return buscar(id);
     }
 
     @PostMapping
+    @Caching(evict = {
+        @CacheEvict(value = "categorias", allEntries = true),
+        @CacheEvict(value = "productos", allEntries = true)
+    })
     public ResponseEntity<Categoria> crear(@Valid @RequestBody Categoria categoria) {
         categoria.setId(null);
         return ResponseEntity.status(HttpStatus.CREATED).body(repositorio.save(categoria));
     }
 
     @PutMapping("/{id}")
+    @Caching(evict = {
+        @CacheEvict(value = "categorias", allEntries = true),
+        @CacheEvict(value = "productos", allEntries = true)
+    })
     public Categoria actualizar(@PathVariable Integer id, @Valid @RequestBody Categoria categoria) {
         buscar(id);
         categoria.setId(id);
@@ -50,6 +63,10 @@ public class CategoriaController {
     }
 
     @DeleteMapping("/{id}")
+    @Caching(evict = {
+        @CacheEvict(value = "categorias", allEntries = true),
+        @CacheEvict(value = "productos", allEntries = true)
+    })
     public ResponseEntity<Void> eliminar(@PathVariable Integer id) {
         repositorio.delete(buscar(id));
         return ResponseEntity.noContent().build();

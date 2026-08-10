@@ -1,6 +1,7 @@
 package com.sierra_dorada.controller;
 
 import com.sierra_dorada.dto.CotizacionEnvioRequest;
+import com.sierra_dorada.dto.UbicacionResponse;
 import com.sierra_dorada.model.Envio;
 import com.sierra_dorada.model.Pedido;
 import com.sierra_dorada.service.EnvioService;
@@ -33,9 +34,10 @@ public class EnvioController {
     }
 
     @GetMapping("/ubicaciones")
-    public List<Map<String, Object>> ubicaciones(
+    public List<UbicacionResponse> ubicaciones(
+        @RequestParam(required = false) String q,
         @RequestParam(required = false) String codigo) {
-        return envios.ubicaciones(codigo);
+        return envios.ubicaciones(q != null ? q : codigo);
     }
 
     @PostMapping("/cotizaciones")
