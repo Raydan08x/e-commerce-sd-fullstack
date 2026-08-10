@@ -130,7 +130,7 @@ jobs:
           umask 077
           archivo="$objetivo/deploy/raspberry/.env.runtime"
           {
-            printf 'SHOP_HTTP_PORT=%s\n' '3102'
+            printf 'SHOP_HTTP_PORT=%s\n' '3103'
             printf 'BACKEND_IMAGE=%s\n' 'ghcr.io/raydan08x/e-commerce-sd-fullstack/backend:${{ github.sha }}'
             printf 'FRONTEND_IMAGE=%s\n' 'ghcr.io/raydan08x/e-commerce-sd-fullstack/frontend:${{ github.sha }}'
             printf 'DB_URL=%s\n' "$DB_URL"
@@ -178,8 +178,8 @@ jobs:
         shell: bash
         run: |
           for intento in $(seq 1 30); do
-            if curl --fail --silent http://127.0.0.1:3102/healthz >/dev/null \
-              && curl --fail --silent http://127.0.0.1:3102/api/productos >/dev/null; then
+            if curl --fail --silent http://127.0.0.1:3103/healthz >/dev/null \
+              && curl --fail --silent http://127.0.0.1:3103/api/productos >/dev/null; then
               docker compose \
                 --env-file /home/sdpi/e-commerce-sd-fullstack/deploy/raspberry/.env.runtime \
                 -f /home/sdpi/e-commerce-sd-fullstack/deploy/raspberry/compose.yaml \
