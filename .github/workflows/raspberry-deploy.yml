@@ -22,7 +22,7 @@ concurrency:
 jobs:
   deploy:
     runs-on: [self-hosted, linux, ARM64, raspberry-sd]
-    timeout-minutes: 35
+    timeout-minutes: 60
 
     steps:
       - name: Descargar repositorio
@@ -118,10 +118,16 @@ jobs:
         shell: bash
         run: |
           cd /home/sdpi/e-commerce-sd-fullstack
-          docker compose \
+          compose=(docker compose \
             --env-file deploy/raspberry/.env.runtime \
-            -f deploy/raspberry/compose.yaml \
-            up -d --build --remove-orphans
+            -f deploy/raspberry/compose.yaml)
+
+          # La Raspberry usa almacenamiento SD: descargar y construir de forma
+          # secuencial evita saturar I/O y el límite de sesiones de BuildKit.
+          "${compose[@]}" pull mysql-local
+          "${compose[@]}" build backend
+          "${compose[@]}" build frontend
+          "${compose[@]}" up -d --no-build --remove-orphans
 
       - name: Verificar tienda y API
         shell: bash
