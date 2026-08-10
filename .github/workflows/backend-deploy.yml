@@ -127,6 +127,7 @@ jobs:
           infrastructure-role-arn: arn:aws:iam::${{ steps.aws-account.outputs.id }}:role/${{ env.ECS_INFRASTRUCTURE_ROLE }}
 
           container-port: ${{ env.CONTAINER_PORT }}
+          health-check-path: /api/productos
 
           environment-variables: |
             [
