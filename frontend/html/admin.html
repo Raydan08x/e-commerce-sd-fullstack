@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panel de Administración - Sierra Dorada</title>
+    <link rel="icon" type="image/png" href="../src/assets/icons/isotipo-dorado-y-blanco.png">
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700&family=Barlow:wght@400;600;700&family=Dorsa&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../src/css/navbar.css?v=20260715-4">
+    <link rel="stylesheet" href="../src/css/footer.css?v=20260715-1">
+    <link rel="stylesheet" href="../src/css/particles.css?v=20260715-3">
+    <link rel="stylesheet" href="../src/css/components/Preloader.css">
+    <link rel="stylesheet" href="../src/css/admin.css">
+    <link rel="stylesheet" href="../src/css/components/ConfirmModal.css">
+    <link rel="stylesheet" href="../src/css/components/ToastManager.css?v=20260715-2">
+    <link rel="stylesheet" href="../src/css/components/ImageModalManager.css">
+    <link rel="stylesheet" href="../src/css/typography.css?v=20260715-1">
+</head>
+
+<body>
+    <main class="container admin-page">
+        <header class="admin-header">
+            <div>
+                <h1>Panel de Administración</h1>
+                <p>Gestiona los productos del catálogo de Sierra Dorada.</p>
+            </div>
+            <div class="admin-actions">
+                <button id="btnCerrarSesion" class="btn btn-danger">
+                    <i class="bi bi-box-arrow-right me-2"></i>Cerrar Sesión
+                </button>
+            </div>
+        </header>
+
+        <!-- Pestañas de Navegación -->
+        <ul class="nav nav-tabs" id="adminTabs" role="tablist">
+            <li class="nav-item" role="presentation">
+                <button class="nav-link active" id="gestion-tab" data-bs-toggle="tab" data-bs-target="#gestion-tab-pane" type="button" role="tab" aria-controls="gestion-tab-pane" aria-selected="true">Gestión de Productos</button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="formulario-tab" data-bs-toggle="tab" data-bs-target="#formulario-tab-pane" type="button" role="tab" aria-controls="formulario-tab-pane" aria-selected="false">Agregar / Editar Producto</button>
+            </li>
+        </ul>
+
+        <!-- Contenido de las Pestañas -->
+        <div class="tab-content" id="adminTabsContent">
+            <!-- Pestaña 1: Gestión de Productos -->
+            <div class="tab-pane fade show active" id="gestion-tab-pane" role="tabpanel" aria-labelledby="gestion-tab" tabindex="0">
+                <div class="admin-panel">
+                    <div class="gestion-header">
+                        <h2>Lista de Productos</h2>
+                        <div class="d-flex gap-2">
+                            <!-- Barra de Búsqueda -->
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="bi bi-search"></i></span>
+                                <input type="text" id="inputBusqueda" class="form-control" placeholder="Buscar por ID o Nombre...">
+                            </div>
+                            <!-- Acciones en Lote -->
+                            <div class="dropdown">
+                                <button class="btn btn-secondary dropdown-toggle" type="button" id="btnAccionesLote" data-bs-toggle="dropdown" aria-expanded="false" disabled>
+                                    Acciones
+                                </button>
+                                <ul class="dropdown-menu" aria-labelledby="btnAccionesLote">
+                                    <li><a class="dropdown-item text-danger" href="#" id="btnEliminarSeleccionados">Eliminar seleccionados</a></li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="table-responsive">
+                        <table class="table table-dark table-hover">
+                            <thead>
+                                <tr>
+                                    <th><input type="checkbox" id="seleccionarTodo"></th>
+                                    <th class="sortable-header" data-sort="id" style="cursor: pointer; user-select: none;">ID <i class="bi bi-arrow-down-up ms-1" style="font-size: 0.75rem; color: var(--color-dorado);"></i></th>
+                                    <th class="sortable-header" data-sort="name" style="cursor: pointer; user-select: none;">Nombre <i class="bi bi-arrow-down-up ms-1" style="font-size: 0.75rem; color: var(--color-dorado);"></i></th>
+                                    <th class="sortable-header" data-sort="categoria" style="cursor: pointer; user-select: none;">Categoría <i class="bi bi-arrow-down-up ms-1" style="font-size: 0.75rem; color: var(--color-dorado);"></i></th>
+                                    <th class="sortable-header" data-sort="price" style="cursor: pointer; user-select: none;">Precio <i class="bi bi-arrow-down-up ms-1" style="font-size: 0.75rem; color: var(--color-dorado);"></i></th>
+                                    <th class="sortable-header" data-sort="abv" style="cursor: pointer; user-select: none;">ABV <i class="bi bi-arrow-down-up ms-1" style="font-size: 0.75rem; color: var(--color-dorado);"></i></th>
+                                    <th class="sortable-header" data-sort="ibu" style="cursor: pointer; user-select: none;">IBU <i class="bi bi-arrow-down-up ms-1" style="font-size: 0.75rem; color: var(--color-dorado);"></i></th>
+                                    <th class="sortable-header" data-sort="activo" style="cursor: pointer; user-select: none;">Estado <i class="bi bi-arrow-down-up ms-1" style="font-size: 0.75rem; color: var(--color-dorado);"></i></th>
+                                    <th>Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tablaProductos">
+                                <!-- Las filas se insertarán aquí con JavaScript -->
+                            </tbody>
+                        </table>
+                    </div>
+                    <p id="mensajeTabla" class="mt-3"></p>
+                </div>
+            </div>
+
+            <!-- Pestaña 2: Formulario -->
+            <div class="tab-pane fade" id="formulario-tab-pane" role="tabpanel" aria-labelledby="formulario-tab" tabindex="0">
+                <div class="admin-panel">
+                    <h2 id="tituloFormulario">Agregar producto</h2>
+                    <form id="formProducto">
+                        <!-- Campos ocultos para manejar edición -->
+                        <input type="hidden" id="modoEdicion" value="false">
+                        <input type="hidden" id="idOriginal">
+ 
+                        <div class="mb-3">
+                            <h5>Información Básica</h5>
+                            <hr>
+                             <div class="row">
+                                <div class="col-md-4 mb-3">
+                                    <label for="id" class="form-label">ID del Producto</label>
+                                    <input type="text" id="id" class="form-control" required>
+                                </div>
+                                <div class="col-md-4 mb-3">
+                                    <label for="name" class="form-label">Nombre (Name)</label>
+                                    <input type="text" id="name" class="form-control" required>
+                                </div>
+                                <div class="col-md-4 mb-3">
+                                    <label for="categoriaSelector" class="form-label">Categoría del Producto</label>
+                                    <select id="categoriaSelector" class="form-select" required>
+                                        <option value="Cervezas" selected>Cerveza</option>
+                                        <option value="Packs">Pack</option>
+                                        <option value="Merchandising">Merchandising</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="mb-3">
+                                <label for="inspiration" class="form-label">Inspiración</label>
+                                <input type="text" id="inspiration" class="form-control">
+                            </div>
+                            <div class="mb-3">
+                                <label for="description" class="form-label">Descripción Corta</label>
+                                <textarea id="description" class="form-control" rows="2" required></textarea>
+                            </div>
+                            <div class="row">
+                              <div class="col-md-6 mb-3">
+                                <label for="price" class="form-label">Precio</label>
+                                <input type="number" id="price" class="form-control" min="0" step="0.01" required>
+                              </div>
+                              <div class="col-md-6 mb-3">
+                                <label for="stock" class="form-label">Stock disponible</label>
+                                <input type="number" id="stock" class="form-control" min="0" step="1" value="0" required>
+                              </div>
+                            </div>
+                            <div class="mb-3">
+                                <label for="image" class="form-label">URL de la Imagen del Producto</label>
+                                <div class="input-group">
+                                    <span class="input-group-text"><i class="bi bi-camera"></i></span>
+                                    <input type="text" id="image" class="form-control" placeholder="https://ejemplo.com/imagen.jpg" required>
+                                </div>
+                            </div>
+                            <div class="mb-3">
+                                <label for="imageFileSelector" class="form-label">O seleccionar imagen del proyecto</label>
+                                <select id="imageFileSelector" class="form-select">
+                                    <option value="" selected>-- Seleccionar imagen local --</option>
+                                    <option value="../src/assets/images/ale-apa.png">APA Premium</option>
+                                    <option value="../src/assets/images/corozo-sour.png">Sour de Corozo</option>
+                                    <option value="../src/assets/images/sour-pina.png">Sour de Piña</option>
+                                    <option value="../src/assets/images/ale-stout.png">Stout Premium</option>
+                                    <option value="../src/assets/images/ale-barleywine.png">Barley Wine</option>
+                                    <option value="../src/assets/images/banner-apa.png">Banner APA</option>
+                                </select>
+                            </div>
+                            <div class="mb-3">
+                                <label for="imageFile" class="form-label">O subir imagen desde tu PC</label>
+                                <input type="file" id="imageFile" class="form-control" accept="image/png, image/jpeg, image/webp">
+                                <small class="form-text text-white-50">Soporta PNG, JPG, JPEG y WebP. Se comprime automáticamente. A futuro requiere backend/base de datos.</small>
+                            </div>
+                        </div>
+
+                        <!-- Contenedor de detalles exclusivos de cerveza (ocultable dinámicamente) -->
+                        <div id="seccionCervezaDetalles">
+                            <div class="mb-3 mt-4">
+                                <h5>Detalles de Cerveza (Opcional)</h5>
+                                <hr>
+                                <div class="row">
+                                    <div class="col-md-6 mb-3">
+                                        <label for="abv" class="form-label">ABV (%)</label>
+                                        <input type="text" id="abv" class="form-control" placeholder="Ej: 5.5">
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <label for="ibu" class="form-label">IBU</label>
+                                        <input type="text" id="ibu" class="form-control" placeholder="Ej: 38">
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="mb-3 mt-4">
+                                <h5>Apariencia y Presentación</h5>
+                                <hr>
+                                <div class="row">
+                                    <div class="col-md-6 mb-3">
+                                        <label class="form-label">Color (Selección Visual)</label>
+                                        <div class="d-flex flex-wrap gap-2 mb-2" id="contenedorColoresPredefinidos">
+                                            <button type="button" class="btn btn-sm btn-dark d-flex align-items-center gap-1 border-secondary btn-color-predefinido" data-color="#F2B705" data-nombre="Dorado pálido" style="background: #222;">
+                                                <span style="display:inline-block; width:16px; height:16px; border-radius:50%; background-color:#F2B705;"></span> Dorado Pálido
+                                            </button>
+                                            <button type="button" class="btn btn-sm btn-dark d-flex align-items-center gap-1 border-secondary btn-color-predefinido" data-color="#D99A2B" data-nombre="Dorado claro brillante" style="background: #222;">
+                                                <span style="display:inline-block; width:16px; height:16px; border-radius:50%; background-color:#D99A2B;"></span> Dorado Claro
+                                            </button>
+                                            <button type="button" class="btn btn-sm btn-dark d-flex align-items-center gap-1 border-secondary btn-color-predefinido" data-color="#5A1F0F" data-nombre="Ámbar oscuro" style="background: #222;">
+                                                <span style="display:inline-block; width:16px; height:16px; border-radius:50%; background-color:#5A1F0F;"></span> Ámbar Oscuro
+                                            </button>
+                                            <button type="button" class="btn btn-sm btn-dark d-flex align-items-center gap-1 border-secondary btn-color-predefinido" data-color="#8B0015" data-nombre="Rubí intenso" style="background: #222;">
+                                                <span style="display:inline-block; width:16px; height:16px; border-radius:50%; background-color:#8B0015;"></span> Rubí Intenso
+                                            </button>
+                                            <button type="button" class="btn btn-sm btn-dark d-flex align-items-center gap-1 border-secondary btn-color-predefinido" data-color="#080606" data-nombre="Negro intenso" style="background: #222;">
+                                                <span style="display:inline-block; width:16px; height:16px; border-radius:50%; background-color:#080606;"></span> Negro Intenso
+                                            </button>
+                                        </div>
+                                        <div class="d-flex gap-2">
+                                            <input type="color" id="colorHexPicker" class="form-control form-control-color" value="#D99A2B" title="Elige el color" style="width: 50px; height: 38px; padding: 4px;">
+                                            <input type="text" id="colorHex" class="form-control" placeholder="#D99A2B" style="flex-grow: 1;">
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <label for="colorName" class="form-label">Nombre del Color</label>
+                                        <input type="text" id="colorName" class="form-control" placeholder="Dorado claro brillante">
+                                    </div>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="temperature" class="form-label">Temperatura de Consumo</label>
+                                    <input type="text" id="temperature" class="form-control" placeholder="Ej: 6-8°C">
+                                </div>
+                            </div>
+
+                            <div class="mb-3 mt-4">
+                                <h5>Características Sensoriales</h5>
+                                <hr>
+                                <div class="row">
+                                    <div class="col-md-6 mb-3">
+                                        <label for="characteristics_color" class="form-label">Color (Descripción)</label>
+                                        <input type="text" id="characteristics_color" class="form-control">
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <label for="characteristics_aroma" class="form-label">Aroma</label>
+                                        <input type="text" id="characteristics_aroma" class="form-control">
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <label for="characteristics_sabor" class="form-label">Sabor</label>
+                                        <input type="text" id="characteristics_sabor" class="form-control">
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <label for="characteristics_maridaje" class="form-label">Maridaje (Sugerencia)</label>
+                                        <input type="text" id="characteristics_maridaje" class="form-control">
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="mb-3 mt-4">
+                                <h5>Maridaje Detallado</h5>
+                                <hr>
+                                <label for="maridaje" class="form-label">Ítems de Maridaje (nombre o separado por comas)</label>
+                                <input type="text" id="maridaje" class="form-control" placeholder="Ej: Hamburguesas artesanales, Pollo a la parrilla">
+                                <small class="form-text text-white-50">Límite de 3 maridajes. Los emojis se detectan automáticamente.</small>
+                            </div>
+                        </div>
+
+                        <!-- Switch de activo reinstalado -->
+                        <div class="form-check form-switch mb-4 mt-4">
+                            <input class="form-check-input" type="checkbox" role="switch" id="activoProducto" checked>
+                            <label class="form-check-label" for="activoProducto">Producto Activo en el Catálogo</label>
+                        </div>
+
+ 
+                        <div class="d-grid gap-2">
+                            <button type="submit" id="btnGuardar" class="btn btn-dorado">Guardar producto</button>
+                            <button type="button" id="btnLimpiar" class="btn btn-outline-secondary">Limpiar formulario</button>
+                        </div>
+ 
+                        <p id="mensajeProducto" class="mt-3"></p>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </main>
+ 
+    <!-- Modal para Gestionar Galería de Imágenes -->
+    <div class="modal fade" id="modalCambiarImagen" tabindex="-1" aria-labelledby="modalCambiarImagenLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+            <div class="modal-content bg-dark text-light">
+                <div class="modal-header border-secondary">
+                    <h5 class="modal-title" id="modalCambiarImagenLabel">Gestionar Imágenes del Producto</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p>Producto: <strong id="nombreProductoModal"></strong></p>
+
+                    <!-- Galería actual -->
+                    <div class="mb-3">
+                        <label class="form-label">Imágenes cargadas</label>
+                        <div id="galeriaImagenesModal" class="d-flex flex-wrap gap-2">
+                            <!-- Se inyectan dinámicamente -->
+                        </div>
+                        <p id="mensajeGaleriaVacia" class="text-white-50 small mt-2" style="display: none;">No hay imágenes cargadas.</p>
+                    </div>
+
+                    <hr class="border-secondary">
+
+                    <!-- Agregar nueva imagen -->
+                    <div class="mb-3">
+                        <label class="form-label">Agregar nueva imagen</label>
+                        <div class="row g-2">
+                            <div class="col-md-6">
+                                <input type="url" class="form-control" id="inputUrlImagenModal" placeholder="https://ejemplo.com/imagen.jpg">
+                            </div>
+                            <div class="col-md-6">
+                                <select id="selectImageFitModal" class="form-select bg-dark text-light border-secondary">
+                                    <option value="cover" selected>Recortar (Llenar contenedor)</option>
+                                    <option value="contain">Alejar / Ajustar (Mostrar completa)</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="selectImagenLocalModal" class="form-label">O seleccionar imagen del proyecto</label>
+                        <select id="selectImagenLocalModal" class="form-select bg-dark text-light border-secondary">
+                            <option value="" selected>-- Seleccionar imagen local --</option>
+                            <option value="../src/assets/images/ale-apa.png">APA Premium</option>
+                            <option value="../src/assets/images/corozo-sour.png">Sour de Corozo</option>
+                            <option value="../src/assets/images/sour-pina.png">Sour de Piña</option>
+                            <option value="../src/assets/images/ale-stout.png">Stout Premium</option>
+                            <option value="../src/assets/images/ale-barleywine.png">Barley Wine</option>
+                            <option value="../src/assets/images/banner-apa.png">Banner APA</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="inputFileImagenModal" class="form-label">O subir desde tu PC</label>
+                        <input class="form-control" type="file" id="inputFileImagenModal" accept="image/png, image/jpeg, image/webp">
+                        <small class="form-text text-white-50">
+                            Soporta PNG, JPG, JPEG y WebP. Se comprimen automáticamente. Por el límite de localStorage, se recomienda no subir muchas imágenes grandes.
+                        </small>
+                    </div>
+
+                    <button type="button" id="btnAgregarImagenModal" class="btn btn-outline-dorado w-100 mb-3">
+                        <i class="bi bi-plus-lg me-1"></i>Agregar a la galería
+                    </button>
+
+                    <div id="mensajeModal" class="mensaje-error"></div>
+                    <input type="hidden" id="idProductoModal">
+                </div>
+                <div class="modal-footer border-secondary justify-content-between">
+                    <button type="button" id="btnQuitarImagenModal" class="btn btn-outline-danger"><i class="bi bi-trash me-1"></i>Dejar solo la principal</button>
+                    <div>
+                        <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cerrar</button>
+                        <button type="button" id="btnGuardarImagenModal" class="btn btn-dorado">Guardar Cambios</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de Confirmación Genérico -->
+    <dialog id="confirmacionModal" class="confirm-modal">
+        <div class="confirm-modal__content">
+            <h3 id="confirmacionModalTitulo"></h3>
+            <p id="confirmacionModalMensaje"></p>
+            <div class="confirm-modal__actions">
+                <button type="button" id="btnCancelarConfirmacion" class="btn btn-outline-secondary">Cancelar</button>
+                <button type="button" id="btnAceptarConfirmacion" class="btn btn-danger">Confirmar</button>
+            </div>
+        </div>
+    </dialog>
+
+    <!-- Contenedor para las notificaciones Toast -->
+    <div id="toastContainer"></div>
+
+    <script type="module" src="../src/js/app.js?v=20260715-10"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script type="module" src="../src/js/admin.js"></script>
+</body>
+</html>

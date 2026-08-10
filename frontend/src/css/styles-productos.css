@@ -1,0 +1,83 @@
+@import "./components/navbar.css";
+@import "./components/footer.css";
+@import "./components/ProductDetailsModal.css";
+@import "./components/ToastManager.css?v=20260715-2";
+
+:root {
+    --color-dorado: #B3A269;
+    --color-negro: #222223;
+    --color-blanco-hueso: #E5E1E6;
+    --color-blancox: #FFF8F8;
+    --color-verde: #034638;
+    --color-gris: #75787B;
+    --color-magenta: #6C1D45;
+    --fuente-titulos: 'Dorsa' ,'sans-serif';
+    --fuente-parrafos: 'Barlow', Arial, Helvetica, sans-serif;
+    --fuente-destacados: 'Barlow Condensed', Arial, Helvetica, sans-serif;
+
+    /* inventa valeria inventa*/
+    --nav-bg: rgba(34, 34, 35, 0.65);
+    --nav-border: rgba(179, 162, 105, 0.25);
+    --nav-text: var(--color-blanco-hueso);
+    --nav-primary: var(--color-dorado);
+    --nav-secondary: var(--color-blanco-hueso);
+}
+
+body {
+    min-height: 100vh;
+    margin: 0;
+    padding: 100px 32px 32px;
+    font-family: var(--fuente-parrafos);
+    color: var(--color-blanco-hueso);
+    background-color: var(--color-negro);
+    background-image:
+        radial-gradient(circle at 0% 0%, rgba(179, 162, 105, 0.18), transparent 32%),
+        radial-gradient(circle at 100% 100%, rgba(3, 70, 56, 0.12), transparent 32%);
+}
+
+.titular-pantalla {
+    font-family: var(--fuente-titulos);
+    font-size: clamp(4rem, 12vw, 10.9rem);
+    letter-spacing: 0.05em;
+    line-height: 1;
+    margin: 0;
+}
+
+h1 {
+    font-family: var(--fuente-titulos);
+    font-size: clamp(2.5rem, 6vw, 4.2rem);
+    letter-spacing: 0.05em;
+    line-height: 1.1;
+}
+
+h2,
+h3 {
+    font-family: var(--fuente-titulos);
+}
+
+h2 {
+    font-size: clamp(2rem, 5vw, 3rem);
+    letter-spacing: 0.05em;
+    line-height: 1.2;
+}
+
+h3 {
+    font-size: clamp(1.75rem, 4vw, 2.9rem);
+    letter-spacing: 0.08em;
+    line-height: 1.2;
+}
+
+.subtitulo {
+    font-family: var(--fuente-titulos);
+    font-size: 1.25rem;
+    letter-spacing: 0;
+    font-weight: 600;
+}
+
+p {
+    font-family: var(--fuente-titulos);
+    font-size: 1.125rem;
+    letter-spacing: 0;
+    line-height: 1.6;
+}
+

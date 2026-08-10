@@ -1,0 +1,616 @@
+:root {
+    --footer-dorsa-size: 20px;
+    --footer-dorsa-spacing: 0.14em;
+}
+
+.footer-custom {
+    position: relative;
+    overflow: hidden;
+    box-sizing: border-box;
+    background-color: var(--color-negro) !important;
+    border: 1px solid var(--color-dorado);
+    border-radius: 25px;
+    font-family: var(--fuente-parrafos);
+    width: 100% !important;
+    max-width: 100%;
+}
+
+.footer-custom * {
+    box-sizing: border-box;
+}
+
+/* montañas detras */
+.footer-custom::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%20500%20300'%3E%3Cpolygon%20points='0,300%2090,140%20150,210%20230,60%20300,180%20380,100%20500,300'%20fill='%23E5E1E6'%20opacity='0.5'/%3E%3Cpolygon%20points='120,300%20210,170%20270,230%20350,110%20500,300'%20fill='%23B3A269'%20opacity='0.6'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right bottom;
+    background-size: 55% auto;
+    opacity: 0.08;
+    pointer-events: none;
+}
+
+.footer-custom .container {
+    position: relative;
+    z-index: 1;
+    max-width: 100% !important;
+    width: 100% !important;
+    padding: 0 30px;
+    margin: 0 auto;
+}
+
+.footer-border-main {
+    border-color: rgba(179, 162, 105, 0.2) !important;
+}
+
+.footer-brand-link {
+    display: inline-flex;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 0.75rem;
+    text-decoration: none !important;
+}
+
+.footer-brand-link .footer-logo {
+    margin-right: 0 !important;
+}
+
+.footer-logo {
+    width: 65px;
+    height: 65px;
+    object-fit: contain;
+    flex-shrink: 0;
+}
+
+.footer-title-text {
+    margin: 0;
+    display: block;
+    line-height: 0.9;
+    font-family: var(--fuente-titulos);
+    color: var(--color-blanco-hueso) !important;
+    font-size: 2.1rem;
+    letter-spacing: 0.05em;
+    font-weight: 400;
+    text-transform: capitalize;
+}
+
+.footer-desc-text {
+    color: var(--color-blanco-hueso) !important;
+    opacity: 0.9;
+    font-size: 0.85rem;
+    line-height: 1.5;
+    max-width: 220px;
+}
+
+.footer-line-decor {
+    width: 80px;
+    height: 1px;
+    background-color: var(--color-dorado) !important;
+}
+
+.footer-section-heading {
+    color: var(--color-dorado) !important;
+    font-family: var(--fuente-titulos);
+    font-size: var(--footer-dorsa-size) !important;
+    letter-spacing: var(--footer-dorsa-spacing);
+    line-height: 1.1;
+    font-weight: 400;
+}
+
+.footer-custom a,
+.footer-links-list a,
+.footer-contact-info li,
+.footer-credits-row span,
+.footer-legal-links a {
+    color: var(--color-blanco-hueso) !important;
+    text-decoration: none !important;
+}
+
+.footer-links-list a span,
+.footer-contact-info li i,
+.footer-hop-icon,
+.footer-center-svg,
+.footer-legal-links span,
+.footer-social-icon i {
+    color: var(--color-dorado) !important;
+}
+
+.footer-phone-number {
+    transition: color 0.2s ease, text-shadow 0.2s ease;
+}
+
+.footer-phone-number:hover,
+.footer-phone-number:focus-visible {
+    color: var(--color-dorado) !important;
+    text-shadow: 0 0 8px rgba(179, 162, 105, 0.5);
+    outline: none;
+}
+
+.footer-links-list a:hover,
+.footer-legal-links a:hover {
+    color: var(--color-dorado) !important;
+}
+
+.footer-social-icon {
+    border: 1px solid rgba(179, 162, 105, 0.4) !important;
+    border-radius: 50%;
+    width: 30px;
+    height: 30px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.85rem;
+    transition: background-color 0.2s ease, border-color 0.2s ease;
+}
+
+.footer-social-icon:hover {
+    background-color: rgba(179, 162, 105, 0.15) !important;
+    border-color: var(--color-dorado) !important;
+}
+
+.footer-credits-row {
+    opacity: 0.8;
+}
+
+.footer-legal-links a {
+    color: var(--color-blanco-hueso) !important;
+}
+
+.footer-custom .row {
+    display: flex;
+    flex-wrap: wrap;
+    margin-right: -15px;
+    margin-left: -15px;
+}
+
+.footer-custom .col-12,
+.footer-custom .col-sm-4,
+.footer-custom .col-md-3 {
+    position: relative;
+    width: 100%;
+    padding-right: 15px;
+    padding-left: 15px;
+}
+
+.footer-custom .col-12 {
+    flex: 0 0 100%;
+    max-width: 100%;
+}
+
+.footer-custom .d-flex {
+    display: flex;
+}
+
+.footer-custom .d-block {
+    display: block;
+}
+
+.footer-custom .flex-column {
+    flex-direction: column;
+}
+
+.footer-custom .align-items-center {
+    align-items: center;
+}
+
+.footer-custom .justify-content-center {
+    justify-content: center;
+}
+
+.footer-custom .justify-content-between {
+    justify-content: space-between;
+}
+
+.footer-custom .flex-wrap {
+    flex-wrap: wrap;
+}
+
+.footer-custom .gap-2 {
+    gap: 0.5rem;
+}
+
+.footer-custom .gap-3 {
+    gap: 1rem;
+}
+
+.footer-custom .gy-4 {
+    row-gap: 1rem;
+}
+
+.footer-custom .me-3 {
+    margin-right: 1rem;
+}
+
+.footer-custom .mb-0 {
+    margin-bottom: 0 !important;
+}
+
+.footer-custom .mb-2 {
+    margin-bottom: 0.5rem !important;
+}
+
+.footer-custom .mb-3 {
+    margin-bottom: 0.75rem !important;
+}
+
+.footer-custom .mb-4 {
+    margin-bottom: 1rem !important;
+}
+
+.footer-custom .mt-3 {
+    margin-top: 0.75rem !important;
+}
+
+.footer-custom .mt-5 {
+    margin-top: 2rem !important;
+}
+
+.footer-custom .py-5 {
+    padding-top: 1.75rem !important;
+    padding-bottom: 1.75rem !important;
+}
+
+.footer-custom .px-4 {
+    padding-left: 1rem !important;
+    padding-right: 1rem !important;
+}
+
+.footer-custom .pb-3 {
+    padding-bottom: 0.75rem !important;
+}
+
+.footer-custom .pb-4 {
+    padding-bottom: 1rem !important;
+}
+
+.footer-custom .pt-2 {
+    padding-top: 0.5rem !important;
+}
+
+.footer-custom .p-0 {
+    padding: 0 !important;
+}
+
+.footer-custom .m-0 {
+    margin: 0 !important;
+}
+
+.footer-custom .small {
+    font-size: 0.82rem;
+}
+
+.footer-custom .fw-bold {
+    font-weight: 700;
+}
+
+.footer-custom .text-uppercase {
+    text-transform: uppercase;
+}
+
+.footer-custom .text-decoration-none {
+    text-decoration: none;
+}
+
+.footer-custom .list-unstyled {
+    list-style: none;
+}
+
+.footer-custom .border-bottom {
+    border-bottom: 1px solid rgba(179, 162, 105, 0.2) !important;
+}
+
+/* === Logos Institucionales === */
+.footer-institutional-logos {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    padding: 1rem 0 0.75rem;
+    margin-top: 0.25rem;
+    border-top: 1px solid rgba(179, 162, 105, 0.2);
+}
+
+.footer-institutional-logos .footer-section-heading {
+    font-size: 16px !important;
+    margin-bottom: 0.5rem !important;
+}
+
+.footer-logos-row {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 2rem;
+    flex-wrap: wrap;
+    margin-bottom: 0.5rem;
+}
+
+.footer-inst-logo {
+    height: 50px;
+    width: auto;
+    object-fit: contain;
+    filter: brightness(0.95);
+    transition: filter 0.3s ease, transform 0.3s ease;
+}
+
+.footer-inst-logo:hover {
+    filter: brightness(1.1);
+    transform: scale(1.05);
+}
+
+.footer-logo-presidencia {
+    height: 48px;
+}
+
+.footer-logo-sena-fe {
+    height: 42px;
+}
+
+.footer-inst-description {
+    color: var(--color-blanco-hueso) !important;
+    opacity: 0.7;
+    font-size: 0.75rem;
+    margin: 0;
+    font-style: italic;
+}
+
+/* ========================================
+   RESPONSIVE — sm breakpoint
+   ======================================== */
+@media (min-width: 576px) {
+    .footer-custom .col-sm-4 {
+        flex: 0 0 33.333333%;
+        max-width: 33.333333%;
+    }
+}
+
+@media (min-width: 768px) {
+    .footer-custom .col-md-3 {
+        flex: 0 0 25%;
+        max-width: 25%;
+    }
+}
+
+/* ========================================
+   RESPONSIVE — Móvil (≤860px)
+   ======================================== */
+@media (max-width: 860px) {
+    .footer-custom {
+        width: calc(100% - 20px) !important;
+        margin: 20px auto 10px !important;
+        padding: 16px 14px !important;
+        border-radius: 18px;
+        border-color: rgba(179, 162, 105, 0.35);
+        background: rgba(34, 34, 35, 0.92) !important;
+    }
+
+    .footer-custom::before {
+        background-size: 110% auto;
+        opacity: 0.04;
+    }
+
+    .footer-custom .container {
+        padding: 0;
+    }
+
+    .footer-custom .row {
+        text-align: center;
+        row-gap: 10px;
+        padding-bottom: 10px !important;
+        margin-bottom: 8px !important;
+    }
+
+    .footer-custom .d-flex {
+        justify-content: center;
+    }
+
+    .footer-custom .py-5 {
+        padding-top: 1rem !important;
+        padding-bottom: 1rem !important;
+    }
+
+    .footer-custom .px-4 {
+        padding-left: 0 !important;
+        padding-right: 0 !important;
+    }
+
+    /* --- Marca --- */
+    .footer-brand-link {
+        justify-content: center;
+        gap: 0.5rem;
+        margin-bottom: 0 !important;
+    }
+
+    .footer-logo {
+        width: 38px;
+        height: 38px;
+    }
+
+    .footer-title-text {
+        font-size: 1.5rem;
+        line-height: 1;
+        letter-spacing: 0.04em;
+    }
+
+    .footer-title-text br {
+        display: none;
+    }
+
+    .footer-desc-text {
+        display: none;
+    }
+
+    .footer-line-decor,
+    .footer-hop-icon {
+        display: none !important;
+    }
+
+    .footer-section-heading {
+        font-family: var(--fuente-destacados);
+        font-size: 0.85rem !important;
+        margin-bottom: 0.35rem !important;
+        letter-spacing: 0.08em;
+        color: rgba(179, 162, 105, 0.9) !important;
+    }
+
+    /* --- Navegación: links simples en fila --- */
+    .footer-links-list {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 4px 14px;
+        max-width: 100%;
+        margin: 0 auto !important;
+        padding: 0 !important;
+    }
+
+    .footer-links-list li {
+        margin: 0 !important;
+        padding: 0 !important;
+        border-bottom: 0 !important;
+    }
+
+    .footer-links-list a {
+        min-height: auto;
+        justify-content: center;
+        padding: 4px 0;
+        border-radius: 0;
+        background: none !important;
+        border: none !important;
+        font-size: 0.82rem;
+        line-height: 1.2;
+        transition: color 0.2s ease;
+    }
+
+    .footer-links-list a span {
+        display: none;
+    }
+
+    /* --- Contacto: apilado vertical limpio --- */
+    .footer-contact-info {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 6px;
+    }
+
+    .footer-contact-info li {
+        margin: 0 !important;
+        padding: 0 !important;
+        border-bottom: 0 !important;
+        font-size: 0.78rem;
+        line-height: 1.25;
+        color: rgba(229, 225, 230, 0.82) !important;
+        justify-content: center;
+    }
+
+    .footer-contact-info li i {
+        font-size: 0.85rem;
+    }
+
+    .footer-contact-info a {
+        overflow-wrap: anywhere;
+    }
+
+    /* --- Redes sociales: solo iconos horizontales --- */
+    .footer-custom .col-12:last-child ul {
+        display: flex;
+        flex-direction: row;
+        justify-content: center;
+        gap: 12px;
+        margin-top: 0 !important;
+    }
+
+    .footer-custom .col-12:last-child li {
+        margin: 0 !important;
+    }
+
+    .footer-custom .col-12:last-child a {
+        gap: 0 !important;
+        font-size: 0;
+    }
+
+    .footer-social-icon {
+        width: 34px;
+        height: 34px;
+        font-size: 0.95rem;
+        background: rgba(179, 162, 105, 0.08);
+    }
+
+    /* --- Credits --- */
+    .footer-credits-row {
+        gap: 3px;
+        padding-top: 0 !important;
+        text-align: center;
+        opacity: 0.7;
+    }
+
+    .footer-center-svg {
+        display: none;
+    }
+
+    .footer-credits-row span {
+        margin: 0 !important;
+        font-size: 0.65rem;
+        line-height: 1.3;
+        max-width: 300px;
+        margin-left: auto;
+        margin-right: auto;
+    }
+
+    /* --- Logos institucionales móvil --- */
+    .footer-institutional-logos {
+        padding: 0.75rem 0 0.5rem;
+        margin-top: 0.15rem;
+    }
+
+    .footer-institutional-logos .footer-section-heading {
+        font-size: 0.8rem !important;
+        margin-bottom: 0.3rem !important;
+    }
+
+    .footer-logos-row {
+        gap: 1rem;
+        margin-bottom: 0.35rem;
+    }
+
+    .footer-inst-logo {
+        height: 35px;
+    }
+
+    .footer-logo-presidencia {
+        height: 33px;
+    }
+
+    .footer-logo-sena-fe {
+        height: 30px;
+    }
+
+    .footer-inst-description {
+        font-size: 0.62rem;
+    }
+}
+
+/* ========================================
+   RESPONSIVE — Móvil pequeño (≤420px)
+   ======================================== */
+@media (max-width: 420px) {
+    .footer-custom {
+        padding: 14px 10px !important;
+    }
+
+    .footer-links-list {
+        gap: 3px 10px;
+    }
+
+    .footer-contact-info {
+        flex-direction: column;
+        gap: 4px;
+    }
+
+    .footer-custom .col-12:last-child ul {
+        flex-direction: row;
+        gap: 10px;
+    }
+}

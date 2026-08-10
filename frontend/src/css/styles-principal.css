@@ -1,0 +1,580 @@
+/* ESTILOS BASE*/
+:root {
+    --color-dorado: #B3A269;
+    --color-negro: #222223;
+    --color-blanco-hueso: #E5E1E6;
+    --color-blancox: #FFF8F8;
+    --color-verde: #034638;
+    --color-gris: #75787B;
+    --color-magenta: #6C1D45;
+    --fuente-titulos: 'Dorsa', 'sans-serif';
+    --fuente-parrafos: 'Barlow', Arial, Helvetica, sans-serif;
+    --fuente-destacados: 'Barlow Condensed', Arial, Helvetica, sans-serif;
+
+    --nav-bg: rgba(34, 34, 35, 0.65);
+    --nav-border: rgba(179, 162, 105, 0.25);
+    --nav-text: var(--color-blanco-hueso);
+    --nav-primary: var(--color-dorado);
+    --nav-secondary: var(--color-blanco-hueso);
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body, html {
+    height: 100%;
+    padding: 30px;
+    margin: 0;
+    font-family: var(--fuente-parrafos);
+    color: var(--color-blanco-hueso);
+    overflow-x: hidden;
+    scroll-behavior: smooth;
+    background-color: var(--color-negro);
+    background-image:
+        radial-gradient(circle at 0% 0%, rgba(179, 162, 105, 0.18), transparent 32%),
+        radial-gradient(circle at 100% 100%, rgba(3, 70, 56, 0.12), transparent 32%);
+}
+
+/* Contenedor global de textos alineados al centro */
+.content-container {
+    position: relative;
+    z-index: 2;
+    max-width: 1400px;
+    width: 100%;
+    padding: 0 20px;
+}
+
+
+/* SECCIÓN 1 */
+.hero-section {
+    position: relative;
+    width: 100%;
+    min-height: 50vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    padding: 60px 0;
+}
+
+.logo-wrapper {
+    margin-bottom: 2.5rem;
+}
+
+.main-logo {
+    max-width: 180px;
+    height: auto;
+    filter: drop-shadow(0 0 8px rgba(212, 175, 55, 0.25)); 
+    transition: transform 0.4s cubic-bezier(0.25, 1, 0.5, 1), filter 0.4s ease;
+}
+
+/* Efecto al pasar el cursor */
+.main-logo:hover {
+    transform: scale(1.1);
+    filter: drop-shadow(0 0 20px rgba(212, 175, 55, 0.6)) 
+            drop-shadow(0 0 40px rgba(212, 175, 55, 0.2));
+}
+
+.titles {
+    margin-bottom: 3rem;
+}
+
+.brand-title {
+    font-family: var(--fuente-titulos);
+    font-size: 6.5rem;
+    font-weight: 400;
+    letter-spacing: 8px;
+    color: var(--color-blanco-hueso);
+    line-height: 1.1;
+    margin-bottom: 0rem;
+}
+
+.sub-title {
+    font-family: var(--fuente-titulos);
+    font-size: 7.5rem;
+    font-weight: 400;
+    letter-spacing: 2px;
+    color: var(--color-dorado);
+}
+
+.description {
+    font-size: 1.3rem;
+    font-weight: 300;
+    line-height: 1.6;
+    color: var(--color-blanco-hueso);
+    max-width: 900px;
+    margin: 0 auto;
+    letter-spacing: 1px;
+}
+
+
+/* SECCIÓN 2 */
+.process-intro-section {
+    position: relative;
+    width: 100%;
+    min-height: 80hv;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    padding: 50px 0;
+}
+
+.section-titles {
+    margin-bottom: 1.5rem;
+}
+
+.section-main-title {
+    font-family: var(--fuente-titulos);
+    font-size: 4.5rem;
+    font-weight: 400;
+    letter-spacing: 1px;
+    color: var(--color-blanco-hueso);
+}
+
+.section-description {
+    font-size: 1.3rem;
+    font-weight: 300;
+    color: var(--color-blanco-hueso);
+    max-width: 900px;
+    margin: 0 auto;
+    letter-spacing: 0.5px;
+}
+
+/* Tercera Sección */
+.features-section {
+    position: relative;
+    width: 100%;
+    padding: 20px 20px 80px 20px;
+    display: flex;
+    justify-content: center;
+}
+
+/* Contenedor que alinea las 3 tarjetas de forma horizontal */
+.cards-container {
+    position: relative;
+    z-index: 2;
+    display: grid;
+    grid-template-columns: repeat(3, minmax(260px, 360px)); /* Tres columnas balanceadas */
+    gap: 40px 30px; /* Espacio entre tarjetas */
+    width: 100%;
+    max-width: 1200px;
+    justify-content: center;
+    perspective: 1000px;
+}
+
+/* Estilo individual de cada tarjeta */
+.feature-card {
+    background: var(--nav-bg);
+    border: 1px solid var(--nav-border);
+    border-radius: 16px;
+    padding: 40px 30px;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    transform-style: preserve-3d;
+    transition: transform 0.4s cubic-bezier(0.25, 1, 0.5, 1), 
+                border-color 0.4s ease, 
+                box-shadow 0.4s ease;
+}
+
+/* Efecto interactivo sutil al pasar el mouse */
+.feature-card:hover {
+    border-color: var(--color-dorado);
+    transform: translateY(-10px) scale(1.02);
+    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.6), 
+                0 0 20px rgba(212, 175, 55, 0.08);
+}
+
+/* El círculo contenedor del icono */
+.icon-circle {
+    width: 70px;
+    height: 70px;
+    background-color: var(--color-dorado);
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 25px;
+}
+
+/* Estilo del icono interno */
+.icon-circle .material-symbols-outlined {
+    color: var(--color-blanco-hueso);
+    font-size: 32px;
+}
+
+/* Títulos de las tarjetas */
+.card-title {
+    font-family: var(--fuente-titulos);
+    font-size: 2.4rem;
+    font-weight: 400;
+    color: var(--color-blanco-hueso);
+    margin-bottom: 20px;
+    letter-spacing: 1px;
+}
+
+/* Textos de las tarjetas */
+.card-text {
+    font-family: var(--fuente-parrafos);;
+    font-size: 1.2rem;
+    font-weight: 300;
+    line-height: 1.6;
+    color: var(--color-blancox);
+}
+
+/* Cuarta Sección */
+.cta-section {
+    position: relative;
+    width: 100%;
+    padding: 60px 20px 90px 20px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+}
+
+.cta-list {
+    list-style: none;
+    max-width: 755px;
+    margin: 0 auto 2.5rem auto;
+    padding: 0;
+}
+
+.cta-list li {
+    font-family: var(--fuente-destacados);
+    font-size: 1.4rem;
+    font-weight: 300;
+    line-height: 1.6;
+    color: var(--color-dorado);
+    display: inline-flex;
+    align-items: center;
+    text-align: center;
+}
+
+/* Contenedor del botón */
+.cta-button-wrapper {
+    display: flex;
+    justify-content: center;
+}
+
+/* El Botón Dorado */
+.btn-gold {
+    display: inline-block;
+    font-family: var(--fuente-destacados);
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: var(--color-negro);
+    background: linear-gradient(135deg, var(--nav-secondary), var(--nav-primary));
+    text-decoration: none;
+    padding: 14px 36px;
+    border-radius: 50px;
+    letter-spacing: 0.5px;
+    transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease;
+}
+
+/* Efectos sutiles al pasar el cursor */
+.btn-gold:hover {
+    background-color: var(--color-dorado);
+    transform: scale(1.02);
+    box-shadow: var(--color-negro);
+}
+
+/* NEWSLETTER */
+.newsletter-content {
+    width: min(760px, 100%);
+    margin: 54px auto 0;
+    text-align: center;
+}
+
+.newsletter-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 46px;
+    height: 46px;
+    margin-bottom: 18px;
+    color: var(--color-dorado);
+    background: rgba(179, 162, 105, 0.17);
+    border: 1px solid rgba(179, 162, 105, 0.18);
+    border-radius: 50%;
+    font-size: 1.35rem;
+}
+
+.newsletter-content h2 {
+    margin: 0 0 12px;
+    color: var(--color-blanco-hueso);
+    font-family: var(--fuente-titulos);
+    font-size: clamp(3rem, 7vw, 4.8rem);
+    font-weight: 400;
+    letter-spacing: 0.06em;
+    line-height: 1;
+}
+
+.newsletter-description {
+    margin: 0 auto 26px;
+    color: rgba(229, 225, 230, 0.86);
+    font-size: 1.08rem;
+    line-height: 1.5;
+}
+
+.newsletter-form {
+    display: flex;
+    align-items: center;
+    width: min(560px, 100%);
+    min-height: 54px;
+    margin: 0 auto;
+    padding: 5px;
+    background: #222223;
+    border: 1px solid rgba(229, 225, 230, 0.06);
+    border-radius: 999px;
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.25);
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.newsletter-form:focus-within {
+    border-color: rgba(179, 162, 105, 0.65);
+    box-shadow: 0 0 0 3px rgba(179, 162, 105, 0.1), 0 12px 30px rgba(0, 0, 0, 0.25);
+}
+
+.newsletter-form input {
+    min-width: 0;
+    flex: 1;
+    padding: 0 16px;
+    color: var(--color-blanco-hueso);
+    background: transparent;
+    border: 0;
+    outline: 0;
+    font: inherit;
+}
+
+.newsletter-form input::placeholder {
+    color: rgba(229, 225, 230, 0.58);
+}
+
+.newsletter-form button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    min-height: 44px;
+    padding: 0 24px;
+    color: var(--color-negro);
+    background: linear-gradient(135deg, var(--nav-secondary), var(--nav-primary));
+    border: 0;
+    border-radius: 999px;
+    font-family: var(--fuente-destacados);
+    font-size: 1rem;
+    font-weight: 600;
+    letter-spacing: 0.3px;
+    cursor: pointer;
+    transition: transform 0.2s ease, background-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.newsletter-form button:hover,
+.newsletter-form button:focus-visible {
+    background: linear-gradient(135deg, var(--color-blanco-hueso), #c8b575);
+    transform: scale(1.02);
+    box-shadow: 0 8px 18px rgba(179, 162, 105, 0.28);
+    outline: none;
+}
+
+.newsletter-message {
+    min-height: 22px;
+    margin: 10px auto 0;
+    font-size: 0.9rem;
+    font-weight: 600;
+}
+
+.newsletter-message--success {
+    color: #8bd6a8;
+}
+
+.newsletter-message--error {
+    color: #ff9b9b;
+}
+
+.newsletter-legal {
+    max-width: 650px;
+    margin: 2px auto 0;
+    color: rgba(229, 225, 230, 0.57);
+    font-size: 0.78rem;
+    line-height: 1.45;
+}
+
+
+/* ADAPTABILIDAD  */
+@media (max-width: 768px) {
+    /* Ajustes Sección 1 */
+    .brand-title {
+        font-size: 2.4rem;
+    }
+    .sub-title {
+        font-size: 1.8rem;
+    }
+    .description {
+        font-size: 1rem;
+    }
+    .main-logo {
+        max-width: 75px;
+    }
+
+    /* Ajustes Sección 2 */
+    .process-intro-section {
+        min-height: 50vh;
+        padding: 20px 0;
+    }
+    .section-main-title {
+        font-size: 1.8rem;
+    }
+    .section-description {
+        font-size: 0.95rem;
+    }
+
+/* Adaptabilidad Móvil para las Tarjetas*/
+
+    @media (max-width: 992px) {
+    .cards-container {
+        grid-template-columns: minmax(280px, 450px);
+        gap: 20px;
+    }
+    
+    .feature-card {
+        padding: 35px 25px;
+    }
+}
+}
+
+@media (max-width: 768px) {
+    body,
+    html {
+        padding: 88px 12px 24px;
+    }
+
+    .content-container {
+        padding: 0;
+    }
+
+    .hero-section {
+        min-height: auto;
+        padding: 40px 0 26px;
+    }
+
+    .brand-title {
+        font-size: clamp(3rem, 15vw, 4.2rem);
+        letter-spacing: 2px;
+    }
+
+    .sub-title {
+        font-size: clamp(2.4rem, 13vw, 3.6rem);
+    }
+
+    .description {
+        font-size: 1rem;
+        line-height: 1.5;
+    }
+
+    .main-logo {
+        max-width: 130px;
+    }
+
+    .process-intro-section {
+        min-height: auto;
+        padding: 20px 0;
+    }
+
+    .section-main-title {
+        font-size: clamp(2.4rem, 12vw, 3.6rem);
+    }
+
+    .section-description {
+        font-size: 0.95rem;
+    }
+
+    .features-section {
+        padding: 16px 0 48px;
+    }
+
+    .cards-container {
+        grid-template-columns: 1fr;
+        gap: 16px;
+    }
+
+    .feature-card {
+        padding: 24px 18px;
+        border-radius: 14px;
+    }
+
+    .feature-card:hover {
+        transform: none;
+    }
+
+    .card-title {
+        font-size: 2rem;
+        margin-bottom: 12px;
+    }
+
+    .card-text {
+        font-size: 1rem;
+        line-height: 1.5;
+    }
+
+    .cta-section {
+        padding: 36px 0 56px;
+    }
+
+    .cta-list li {
+        font-size: 1.05rem;
+    }
+
+    .newsletter-content {
+        margin-top: 42px;
+    }
+
+    .newsletter-description {
+        font-size: 0.96rem;
+    }
+
+    .newsletter-desktop-break {
+        display: none;
+    }
+
+    .newsletter-form {
+        min-height: 50px;
+    }
+
+    .newsletter-form button {
+        min-height: 40px;
+        padding: 0 17px;
+    }
+}
+
+@media (max-width: 480px) {
+    .newsletter-form {
+        display: grid;
+        gap: 10px;
+        padding: 8px;
+        background: transparent;
+        border: 0;
+        border-radius: 0;
+        box-shadow: none;
+    }
+
+    .newsletter-form input {
+        width: 100%;
+        min-height: 48px;
+        padding: 0 18px;
+        background: #222223;
+        border: 1px solid rgba(179, 162, 105, 0.28);
+        border-radius: 999px;
+    }
+
+    .newsletter-form button {
+        width: 100%;
+        min-height: 46px;
+    }
+}

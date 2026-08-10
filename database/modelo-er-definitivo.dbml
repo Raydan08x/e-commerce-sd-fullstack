@@ -1,0 +1,167 @@
+// Modelo relacional definitivo. MySQL/AWS es la única fuente de verdad.
+Table usuarios {
+  id_usuario int [pk, increment]
+  nombres varchar(100) [not null]
+  apellidos varchar(100) [not null]
+  fecha_nacimiento date
+  genero varchar(30)
+  direccion text
+  email varchar(150) [not null, unique]
+  telefono varchar(20)
+  contrasena varchar(255) [not null]
+  fecha_registro datetime [not null]
+  activo boolean [not null]
+  rol varchar(20) [not null]
+  acepta_terminos boolean [not null]
+  autoriza_datos boolean [not null]
+  autoriza_comunicaciones boolean [not null]
+  fecha_consentimiento datetime
+}
+
+Table categorias {
+  id_categoria int [pk, increment]
+  nombre varchar(50) [not null, unique]
+  categoria_principal_id int
+}
+
+Table productos {
+  id_producto int [pk, increment]
+  codigo varchar(20) [not null, unique]
+  nombre_produ varchar(200) [not null]
+  descripcion_produ text
+  precio_base decimal(12,2) [not null]
+  categoria_id int
+  marca varchar(100)
+  tipo_cerveza varchar(100)
+  estilo_cerveza varchar(100)
+  stock int [not null]
+  abv decimal(4,2)
+  ibu int
+  imagen_url text
+  inspiracion text
+  color_hex varchar(20)
+  color_nombre varchar(100)
+  temperatura varchar(50)
+  leyenda text
+  descripcion_completa text
+  proceso text
+  caracteristica_color text
+  caracteristica_aroma text
+  caracteristica_sabor text
+  caracteristica_maridaje text
+  fecha_creacion datetime [not null]
+  activo boolean [not null]
+}
+
+Table producto_maridajes {
+  producto_id int [not null]
+  orden int [not null]
+  emoji varchar(255)
+  nombre varchar(255)
+  indexes { (producto_id, orden) [pk] }
+}
+
+Table metodos_pago {
+  id_metodo_pago int [pk, increment]
+  nombre varchar(50) [not null, unique]
+  activo boolean [not null]
+}
+
+Table pedidos {
+  id_pedido int [pk, increment]
+  usuario_id int [not null]
+  fecha_pedido datetime [not null]
+  subtotal decimal(12,2) [not null]
+  costo_envio decimal(12,2) [not null]
+  total_pedido decimal(12,2) [not null]
+  estado varchar(30) [not null]
+  direccion_envio text [not null]
+  metodo_pago_id int
+  fecha_confirmacion datetime
+  fecha_envio datetime
+  fecha_entrega datetime
+  notas text
+}
+
+Table detalle_pedidos {
+  id_detalle int [pk, increment]
+  pedido_id int [not null]
+  producto_id int [not null]
+  cantidad int [not null]
+  precio_unitario decimal(12,2) [not null]
+}
+
+Table pagos {
+  id_pagos int [pk, increment]
+  pedido_id int [not null]
+  metodo_pago_id int [not null]
+  monto decimal(12,2) [not null]
+  fecha_pago datetime [not null]
+  estado varchar(30) [not null]
+  transaccion_id varchar(100) [unique]
+}
+
+Table envios {
+  id_envio int [pk, increment]
+  pedido_id int [not null, unique]
+  proveedor varchar(30) [not null]
+  codigo_mipaquete bigint [unique]
+  transportadora_id varchar(100)
+  transportadora_nombre varchar(100)
+  codigo_dane_origen varchar(12) [not null]
+  codigo_dane_destino varchar(12) [not null]
+  destinatario_nombre varchar(150) [not null]
+  destinatario_apellido varchar(150)
+  destinatario_email varchar(150) [not null]
+  destinatario_telefono varchar(20) [not null]
+  direccion_destino text [not null]
+  costo decimal(12,2) [not null]
+  numero_guia varchar(100)
+  url_guia text
+  estado varchar(100) [not null]
+  fecha_creacion datetime [not null]
+  fecha_actualizacion datetime [not null]
+}
+
+Table eventos_envio {
+  id_evento int [pk, increment]
+  envio_id int [not null]
+  estado varchar(100) [not null]
+  descripcion text
+  fecha_evento datetime [not null]
+  payload text
+}
+
+Table mensajes_contacto {
+  id_mensaje int [pk, increment]
+  usuario_id int
+  nombre varchar(150) [not null]
+  telefono varchar(20) [not null]
+  email varchar(150) [not null]
+  mensaje text
+  estado varchar(30) [not null]
+  fecha_creacion datetime [not null]
+}
+
+Table suscripciones_newsletter {
+  id_suscripcion int [pk, increment]
+  usuario_id int
+  email varchar(150) [not null, unique]
+  fecha_suscripcion datetime [not null]
+  activo boolean [not null]
+  fecha_baja datetime
+}
+
+Ref: categorias.categoria_principal_id > categorias.id_categoria
+Ref: productos.categoria_id > categorias.id_categoria
+Ref: producto_maridajes.producto_id > productos.id_producto [delete: cascade]
+Ref: pedidos.usuario_id > usuarios.id_usuario
+Ref: pedidos.metodo_pago_id > metodos_pago.id_metodo_pago
+Ref: detalle_pedidos.pedido_id > pedidos.id_pedido [delete: cascade]
+Ref: detalle_pedidos.producto_id > productos.id_producto
+Ref: pagos.pedido_id > pedidos.id_pedido [delete: cascade]
+Ref: pagos.metodo_pago_id > metodos_pago.id_metodo_pago
+Ref: envios.pedido_id - pedidos.id_pedido
+Ref: eventos_envio.envio_id > envios.id_envio [delete: cascade]
+Ref: mensajes_contacto.usuario_id > usuarios.id_usuario [delete: set null]
+Ref: suscripciones_newsletter.usuario_id > usuarios.id_usuario [delete: set null]

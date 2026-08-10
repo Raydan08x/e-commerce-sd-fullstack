@@ -1,0 +1,38 @@
+:root {
+    --dorsa-letter-spacing: 0.06em;
+    --footer-heading-letter-spacing: 0.18em;
+}
+
+/* Espaciado uniforme para todos los textos que utilizan la tipografía Dorsa. */
+.brand__text,
+.footer-title-text,
+.login-card h1,
+.admin-header h1,
+.admin-panel h2,
+.catalogo-header h1,
+.producto-nombre,
+.titular-pantalla,
+.hero-nosotros__title,
+.empresa-card h2,
+.historia-card h2,
+.contacto-titulo,
+.info-titulo,
+.brand-title,
+.sub-title,
+.section-main-title,
+.card-title,
+.newsletter-content h2,
+.carrito-total h2,
+.carrito-contenido h3,
+.carrito-vacio h2,
+.sd-main-questions,
+.sd-brand-title,
+.producto-modal__titulo,
+.producto-modal__subtitulo,
+.subtitulo {
+    letter-spacing: var(--dorsa-letter-spacing) !important;
+}
+
+.footer-custom .footer-section-heading {
+    letter-spacing: var(--footer-heading-letter-spacing) !important;
+}

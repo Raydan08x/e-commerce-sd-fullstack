@@ -1,0 +1,62 @@
+erDiagram
+    USUARIOS ||--o{ PEDIDOS : realiza
+    USUARIOS o|--o{ MENSAJES_CONTACTO : envia
+    USUARIOS o|--o| SUSCRIPCIONES_NEWSLETTER : suscribe
+    CATEGORIAS o|--o{ CATEGORIAS : agrupa
+    CATEGORIAS ||--o{ PRODUCTOS : clasifica
+    PRODUCTOS ||--o{ PRODUCTO_MARIDAJES : contiene
+    PRODUCTOS ||--o{ DETALLE_PEDIDOS : incluye
+    PEDIDOS ||--|{ DETALLE_PEDIDOS : detalla
+    METODOS_PAGO o|--o{ PEDIDOS : seleccionado
+    PEDIDOS ||--o{ PAGOS : registra
+    METODOS_PAGO ||--o{ PAGOS : procesa
+    PEDIDOS ||--o| ENVIOS : despacha
+    ENVIOS ||--o{ EVENTOS_ENVIO : rastrea
+
+    USUARIOS {
+      int id_usuario PK
+      varchar email UK
+      varchar contrasena
+      varchar rol
+      boolean acepta_terminos
+      boolean autoriza_datos
+    }
+    PRODUCTOS {
+      int id_producto PK
+      varchar codigo UK
+      varchar nombre_produ
+      decimal precio_base
+      int stock
+      boolean activo
+    }
+    PEDIDOS {
+      int id_pedido PK
+      int usuario_id FK
+      decimal subtotal
+      decimal costo_envio
+      decimal total_pedido
+      varchar estado
+    }
+    ENVIOS {
+      int id_envio PK
+      int pedido_id FK,UK
+      bigint codigo_mipaquete UK
+      varchar transportadora_id
+      varchar codigo_dane_destino
+      decimal costo
+      varchar numero_guia
+      varchar estado
+    }
+    EVENTOS_ENVIO {
+      int id_evento PK
+      int envio_id FK
+      varchar estado
+      datetime fecha_evento
+    }
+    CATEGORIAS { int id_categoria PK }
+    PRODUCTO_MARIDAJES { int producto_id PK,FK int orden PK }
+    DETALLE_PEDIDOS { int id_detalle PK int pedido_id FK int producto_id FK }
+    METODOS_PAGO { int id_metodo_pago PK }
+    PAGOS { int id_pagos PK int pedido_id FK int metodo_pago_id FK }
+    MENSAJES_CONTACTO { int id_mensaje PK int usuario_id FK }
+    SUSCRIPCIONES_NEWSLETTER { int id_suscripcion PK int usuario_id FK varchar email UK }

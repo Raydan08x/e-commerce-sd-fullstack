@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registro de usuario - Sierra Dorada</title>
+    <link rel="icon" type="image/png" href="../src/assets/icons/isotipo-dorado-y-blanco.png">
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700&family=Barlow:wght@400;600;700&family=Dorsa&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../src/css/navbar.css?v=20260715-4">
+    <link rel="stylesheet" href="../src/css/footer.css?v=20260715-1">
+    <link rel="stylesheet" href="../src/css/particles.css?v=20260715-3">
+    <link rel="stylesheet" href="../src/css/components/Preloader.css">
+    <link rel="stylesheet" href="../src/css/admin.css">
+    <link rel="stylesheet" href="../src/css/typography.css?v=20260715-1">
+</head>
+
+<body class="login-body">
+
+    <main class="login-container">
+        <section class="login-card registro-card">
+            <img src="../src/assets/icons/complementario-letrasdoradas.png" alt="Logo Sierra Dorada" class="login-logo">
+
+            <h1>Crear <span>Cuenta</span></h1>
+            <p>Completa el formulario con tus datos.</p>
+
+            <form id="formRegistro" novalidate>
+                <div class="row">
+                    <div class="col-12 col-md-6 mb-3">
+                        <label for="nombre" class="form-label"><i class="bi bi-person-badge-fill"></i> Nombre</label>
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="bi bi-person"></i></span>
+                            <input type="text" id="nombre" class="form-control" placeholder="Nombre" autocomplete="given-name" required>
+                        </div>
+                    </div>
+
+                    <div class="col-12 col-md-6 mb-3">
+                        <label for="apellidos" class="form-label"><i class="bi bi-person-badge-fill"></i> Apellidos</label>
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="bi bi-person"></i></span>
+                            <input type="text" id="apellidos" class="form-control" placeholder="Apellidos" autocomplete="family-name" required>
+                        </div>
+                    </div>
+
+                    <div class="col-12 col-md-6 mb-3">
+                        <label for="fechaNacimiento" class="form-label"><i class="bi bi-calendar-event-fill"></i> Fecha de nacimiento</label>
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="bi bi-calendar3"></i></span>
+                            <input type="date" id="fechaNacimiento" class="form-control" autocomplete="bday" required>
+                        </div>
+                    </div>
+
+                    <div class="col-12 col-md-6 mb-3">
+                        <label for="genero" class="form-label"><i class="bi bi-people-fill"></i> Género</label>
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="bi bi-person-vcard"></i></span>
+                            <select id="genero" class="form-select" required>
+                                <option value="" selected disabled>Seleccionar género</option>
+                                <option value="Femenino">Femenino</option>
+                                <option value="Masculino">Masculino</option>
+                                <option value="No binario">No binario</option>
+                                <option value="Prefiero no decirlo">Prefiero no decirlo</option>
+                                <option value="Otro">Otro</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="col-12 mb-3">
+                        <label for="direccion" class="form-label"><i class="bi bi-geo-alt-fill"></i> Dirección de residencia</label>
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="bi bi-house-door"></i></span>
+                            <input type="text" id="direccion" class="form-control" placeholder="Dirección completa" autocomplete="street-address" required>
+                        </div>
+                    </div>
+
+                    <div class="col-12 mb-3">
+                        <label for="email" class="form-label"><i class="bi bi-envelope-fill"></i> Correo electrónico</label>
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="bi bi-envelope"></i></span>
+                            <input type="email" id="email" class="form-control" placeholder="correo@ejemplo.com" autocomplete="email" required>
+                        </div>
+                    </div>
+
+                    <div class="col-12 mb-3">
+                        <label for="telefono" class="form-label"><i class="bi bi-telephone-fill"></i> Teléfono (con indicativo)</label>
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="bi bi-telephone"></i></span>
+                            <input type="tel" id="telefono" class="form-control" placeholder="+57 300 123 4567" autocomplete="tel" required>
+                        </div>
+                    </div>
+
+                    <div class="col-12 col-md-6 mb-3">
+                        <label for="password" class="form-label"><i class="bi bi-lock-fill"></i> Contraseña</label>
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="bi bi-lock"></i></span>
+                            <input type="password" id="password" class="form-control" placeholder="Mínimo 6 caracteres" autocomplete="new-password" required>
+                            <button type="button" class="input-group-text password-toggle" data-password-toggle="password" aria-label="Mostrar contraseña" aria-pressed="false">
+                                <i class="bi bi-eye" aria-hidden="true"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="col-12 col-md-6 mb-3">
+                        <label for="confirmarPassword" class="form-label"><i class="bi bi-shield-lock-fill"></i> Confirmar contraseña</label>
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="bi bi-shield-lock"></i></span>
+                            <input type="password" id="confirmarPassword" class="form-control" placeholder="Repite la contraseña" autocomplete="new-password" required>
+                            <button type="button" class="input-group-text password-toggle" data-password-toggle="confirmarPassword" aria-label="Mostrar confirmación de contraseña" aria-pressed="false">
+                                <i class="bi bi-eye" aria-hidden="true"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <fieldset class="registro-consentimientos">
+                    <legend>Autorizaciones</legend>
+
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" id="aceptaTerminos" required>
+                        <label class="form-check-label" for="aceptaTerminos">
+                            Acepto los <button type="button" class="terminos-link" id="abrirTerminos">términos y condiciones</button>.
+                        </label>
+                    </div>
+
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" id="autorizaDatos" required>
+                        <label class="form-check-label" for="autorizaDatos">
+                            Autorizo el <strong>tratamiento de mis datos personales</strong> conforme a la política de privacidad.
+                        </label>
+                    </div>
+
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" id="autorizaComunicaciones">
+                        <label class="form-check-label" for="autorizaComunicaciones">
+                            Deseo recibir información sobre productos, promociones y eventos.
+                        </label>
+                    </div>
+                </fieldset>
+
+                <div id="mensajesRegistro" class="alert d-none mt-3" role="alert"></div>
+
+                <button type="submit" class="btn btn-dorado w-100">Crear cuenta</button>
+                <a href="login.html" class="btn btn-outline-dorado btn-registro mt-3">Volver al login</a>
+            </form>
+        </section>
+    </main>
+
+    <dialog id="terminosDialog" class="terminos-dialog" aria-labelledby="terminosTitulo">
+        <article>
+            <header class="terminos-dialog__header">
+                <h2 id="terminosTitulo">Términos y Condiciones y Política de Privacidad</h2>
+                <button type="button" id="cerrarTerminos" class="terminos-dialog__cerrar" aria-label="Cerrar términos"><i class="bi bi-x-lg"></i></button>
+            </header>
+
+            <div class="terminos-dialog__contenido">
+                <h3>1. Aceptación de los Términos</h3>
+                <p>Al registrarse y acceder a la plataforma de Sierra Dorada, usted confirma que ha leído, entendido y aceptado los presentes Términos y Condiciones. Asimismo, declara ser mayor de edad (18 años o más) de acuerdo con la legislación colombiana y la de su lugar de residencia. El consumo de alcohol por menores de edad está prohibido.</p>
+
+                <h3>2. Política de Tratamiento de Datos Personales (Ley 1581 de 2012)</h3>
+                <p>En cumplimiento de la Ley 1581 de 2012 y el Decreto 1377 de 2013, Sierra Dorada informa que es responsable del tratamiento de sus datos personales. Al marcar la casilla “Autorizo el tratamiento de mis datos personales” en el formulario de registro, usted otorga su autorización previa, expresa e informada para que sus datos sean recolectados, almacenados, usados y circulados con las siguientes finalidades:</p>
+                <ul>
+                    <li><strong>Verificación de Identidad y Edad:</strong> asegurar que los usuarios cumplen con la edad legal para navegar en un sitio relacionado con bebidas alcohólicas.</li>
+                    <li><strong>Gestión de Usuarios:</strong> permitir el acceso, administración de cuenta y recuperación de perfil a través de correo electrónico o autenticación de terceros (Google).</li>
+                    <li><strong>Comunicaciones Comerciales (Opcional):</strong> si usted lo autoriza, enviar promociones, novedades sobre lanzamientos de cervezas, invitaciones a catas y eventos en el Gastrobar.</li>
+                    <li><strong>Mejora del Servicio:</strong> análisis estadístico anonimizado para mejorar la experiencia de usuario y la oferta de productos.</li>
+                    <li><strong>Cumplimiento Legal:</strong> dar respuesta a requerimientos de autoridades competentes según sea necesario.</li>
+                </ul>
+
+                <h3>3. Derechos del Titular de los Datos</h3>
+                <p>Como titular de sus datos personales, usted tiene derecho a:</p>
+                <ul>
+                    <li>Conocer, actualizar y rectificar sus datos personales frente a los Responsables del Tratamiento.</li>
+                    <li>Solicitar prueba de la autorización otorgada.</li>
+                    <li>Ser informado, previa solicitud, respecto del uso que se le ha dado a sus datos.</li>
+                    <li>Revocar la autorización y/o solicitar la supresión del dato cuando en el tratamiento no se respeten los principios, derechos y garantías constitucionales y legales.</li>
+                    <li>Acceder en forma gratuita a sus datos personales.</li>
+                </ul>
+                <p>Para ejercer estos derechos, puede contactarnos a través del correo electrónico: <a href="mailto:contacto@sierradorada.co">contacto@sierradorada.co</a>.</p>
+
+                <h3>4. Autenticación con Google</h3>
+                <p>Al utilizar la opción “Continuar con Google”, usted autoriza a Sierra Dorada a recibir información básica de su perfil público de Google (Nombre, Apellidos, Correo Electrónico y Foto de Perfil) para facilitar la creación automática de su cuenta. Estos datos serán tratados bajo la misma Política de Protección de Datos descrita anteriormente.</p>
+
+                <h3>5. Uso Responsable</h3>
+                <p>El usuario se compromete a hacer un uso adecuado de los contenidos y servicios (como chat, comentarios, etc.) que Sierra Dorada ofrece. Queda prohibido difundir contenidos de carácter racista, xenófobo, pornográfico-ilegal, de apología del terrorismo o atentatorio contra los derechos humanos.</p>
+
+                <h3>6. Propiedad Intelectual</h3>
+                <p>Todos los derechos de propiedad intelectual del contenido de este sitio web, su diseño gráfico y sus códigos fuente son titularidad exclusiva de Sierra Dorada.</p>
+
+                <h3>7. Modificaciones</h3>
+                <p>Sierra Dorada se reserva el derecho de efectuar sin previo aviso las modificaciones que considere oportunas en su portal, pudiendo cambiar, suprimir o añadir tanto los contenidos y servicios que se presten a través de la misma como la forma en la que estos aparezcan presentados.</p>
+            </div>
+
+            <footer class="terminos-dialog__footer">
+                <button type="button" id="entendidoTerminos" class="btn btn-dorado">Entendido</button>
+            </footer>
+        </article>
+    </dialog>
+
+    <script type="module" src="../src/js/app.js?v=20260715-10"></script>
+    <script type="module" src="../src/js/registro.js?v=20260810-1"></script>
+</body>
+
+</html>

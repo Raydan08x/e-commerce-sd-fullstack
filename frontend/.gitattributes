@@ -1,0 +1,3 @@
+# GitHub Pages no resuelve archivos de Git LFS durante la publicación.
+# Los videos del sitio deben almacenarse como binarios Git normales.
+*.mp4 binary

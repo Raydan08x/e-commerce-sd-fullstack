@@ -1,0 +1,298 @@
+@import "./components/ToastManager.css?v=20260715-3";
+@import "./components/CartSidebar.css?v=20260715-1";
+
+:root {
+    --navbar-brand-spacing: 0.12em;
+    --color-dorado: #B3A269;
+    --color-negro: #222223;
+    --color-blanco-hueso: #E5E1E6;
+    --nav-bg: rgba(34, 34, 35, 0.65);
+    --nav-border: rgba(179, 162, 105, 0.25);
+    --nav-text: var(--color-blanco-hueso);
+    --nav-primary: var(--color-dorado);
+    --nav-secondary: var(--color-blanco-hueso);
+}
+
+.nav-link {
+    text-decoration: none;
+}
+
+.glass-navbar {
+    position: fixed;
+    top: 16px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 1000;
+    width: min(1120px, 100%);
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 18px;
+    padding: 12px 30px;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 999px;
+    background: #222223b6;
+    color: var(--nav-text);
+    backdrop-filter: blur(24px);
+    box-shadow: 0 28px 64px rgba(0, 0, 0, 0.35);
+    box-sizing: border-box;
+}
+
+.brand,
+.navbar-links,
+.navbar-actions {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.navbar-links {
+    gap: 14px;
+}
+
+.navbar-menu {
+    display: flex;
+    align-items: center;
+    gap: 18px;
+}
+
+.navbar-toggle {
+    display: none;
+    align-items: center;
+    justify-content: center;
+    width: 44px;
+    height: 44px;
+    border: 1px solid rgba(179, 162, 105, 0.35);
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.06);
+    color: var(--color-dorado);
+    cursor: pointer;
+}
+
+.navbar-toggle i {
+    font-size: 1.65rem;
+    line-height: 1;
+}
+
+.brand {
+    color: inherit;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.brand__logo {
+    width: auto;
+    height: 60px;
+    object-fit: contain;
+    display: block;
+}
+
+.brand__text {
+    font-family: var(--fuente-titulos);
+    font-size: 2rem;
+    font-weight: 400;
+    letter-spacing: var(--navbar-brand-spacing);
+    text-transform: none;
+    color: var(--color-blanco-hueso);
+    margin: 0;
+    line-height: 1;
+}
+
+.nav-link,
+.icon-button,
+.dropdown__menu button {
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.05);
+    color: inherit;
+    text-decoration: none;
+    padding: 10px 18px;
+    transition: transform 0.2s ease, background 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease, color 0.2s ease;
+    cursor: pointer;
+    font-weight: 600;
+}
+
+.nav-link {
+    min-width: 88px;
+    text-align: center;
+}
+
+.icon-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.4rem;
+}
+
+.cart-button {
+    position: relative;
+}
+
+.cart-badge {
+    position: absolute;
+    top: -8px;
+    right: -8px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 22px;
+    height: 22px;
+    padding: 0 6px;
+    border: 2px solid var(--color-negro);
+    border-radius: 999px;
+    background: var(--color-dorado);
+    color: var(--color-negro);
+    box-shadow: 0 4px 12px rgba(179, 162, 105, 0.45);
+    font-family: 'Barlow', sans-serif;
+    font-size: 0.72rem;
+    font-weight: 700;
+    line-height: 1;
+}
+
+.cart-badge[hidden] {
+    display: none;
+}
+
+.cart-badge--updated {
+    animation: cart-badge-pop 0.35s ease;
+}
+
+@keyframes cart-badge-pop {
+    50% {
+        transform: scale(1.28);
+        box-shadow: 0 4px 18px rgba(179, 162, 105, 0.75);
+    }
+}
+
+.icon-button--outline {
+    background: rgba(255, 255, 255, 0.08);
+    border-color: rgba(255, 255, 255, 0.18);
+}
+
+.icon-button--primary {
+    background: linear-gradient(135deg, var(--nav-secondary), var(--nav-primary));
+    color: var(--color-negro);
+    border-color: transparent;
+}
+
+.icon-button i {
+    font-size: 1rem;
+}
+
+.nav-link:hover,
+.icon-button:hover,
+.dropdown__menu button:hover {
+    transform: translateY(-1px);
+    background: rgba(179, 162, 105, 0.14) !important;
+    border-color: rgba(179, 162, 105, 0.25) !important;
+    color: var(--color-dorado) !important;
+}
+
+.nav-link.is-active {
+    border-color: transparent !important;
+    background: linear-gradient(135deg, var(--nav-secondary), var(--nav-primary)) !important;
+    color: var(--color-negro) !important;
+    box-shadow: 0 12px 24px rgba(179, 162, 105, 0.35) !important;
+}
+
+.icon-button--label {
+    min-width: 72px;
+}
+
+.dropdown {
+    position: relative;
+}
+
+.dropdown__menu {
+    position: absolute;
+    top: calc(100% + 10px);
+    right: 0;
+    min-width: 190px;
+    display: grid;
+    gap: 8px;
+    padding: 12px;
+    border-radius: 18px;
+    border: 1px solid var(--nav-border);
+    background: rgba(34, 34, 35, 0.96);
+    box-shadow: 0 18px 34px rgba(34, 34, 35, 0.45);
+}
+
+@media (max-width: 860px) {
+    .glass-navbar {
+        top: 10px;
+        width: calc(100% - 24px);
+        border-radius: 22px;
+        flex-wrap: wrap;
+        justify-content: space-between;
+        gap: 8px;
+        padding: 10px 12px;
+    }
+
+    .brand {
+        min-width: 0;
+        gap: 8px;
+    }
+
+    .brand__logo {
+        height: 42px;
+    }
+
+    .brand__text {
+        font-size: 1.55rem;
+        letter-spacing: 0.04em;
+        white-space: nowrap;
+    }
+
+    .navbar-toggle {
+        display: inline-flex;
+        flex-shrink: 0;
+    }
+
+    .navbar-menu {
+        display: none;
+        width: 100%;
+        padding-top: 10px;
+        border-top: 1px solid rgba(179, 162, 105, 0.18);
+    }
+
+    .glass-navbar.is-open .navbar-menu {
+        display: grid;
+        gap: 10px;
+    }
+
+    .navbar-links {
+        width: 100%;
+        justify-content: center;
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 8px;
+    }
+
+    .navbar-actions {
+        width: 100%;
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 8px;
+    }
+
+    .glass-navbar .nav-link,
+    .glass-navbar .icon-button {
+        width: 100%;
+        min-height: 42px;
+        padding: 9px 12px;
+        font-size: 0.95rem;
+    }
+}
+
+@media (max-width: 380px) {
+    .brand__text {
+        font-size: 1.35rem;
+    }
+
+    .brand__logo {
+        height: 38px;
+    }
+}

@@ -1,0 +1,32 @@
+.confirm-modal {
+    padding: 28px;
+    border: 1px solid var(--color-dorado);
+    border-radius: 24px;
+    background-color: var(--color-negro);
+    color: var(--color-blanco-hueso);
+    max-width: 450px;
+    box-shadow: 0 24px 50px rgba(0, 0, 0, 0.5);
+}
+
+.confirm-modal::backdrop {
+    background: rgba(15, 23, 42, 0.6);
+    backdrop-filter: blur(3px);
+}
+
+.confirm-modal__content {
+    display: grid;
+    gap: 16px;
+}
+
+.confirm-modal__content h3 {
+    font-family: var(--fuente-destacados);
+    color: var(--color-dorado);
+    font-size: 1.8rem;
+}
+
+.confirm-modal__actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+    margin-top: 12px;
+}
