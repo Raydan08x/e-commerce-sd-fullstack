@@ -14,15 +14,60 @@ on:
 
 permissions:
   contents: read
+  packages: write
 
 concurrency:
   group: raspberry-production
   cancel-in-progress: false
 
 jobs:
+  build-images:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+
+    steps:
+      - name: Descargar repositorio
+        uses: actions/checkout@v6
+
+      - name: Habilitar compilacion ARM64
+        uses: docker/setup-qemu-action@v3
+
+      - name: Configurar Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Autenticar en GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ github.token }}
+
+      - name: Construir backend ARM64
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: backend/Dockerfile
+          platforms: linux/arm64
+          push: true
+          tags: ghcr.io/raydan08x/e-commerce-sd-fullstack/backend:${{ github.sha }}
+          cache-from: type=gha,scope=raspberry-backend
+          cache-to: type=gha,mode=max,scope=raspberry-backend
+
+      - name: Construir frontend ARM64
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: deploy/raspberry/frontend.Dockerfile
+          platforms: linux/arm64
+          push: true
+          tags: ghcr.io/raydan08x/e-commerce-sd-fullstack/frontend:${{ github.sha }}
+          cache-from: type=gha,scope=raspberry-frontend
+          cache-to: type=gha,mode=max,scope=raspberry-frontend
+
   deploy:
+    needs: build-images
     runs-on: [self-hosted, linux, ARM64, raspberry-sd]
-    timeout-minutes: 60
+    timeout-minutes: 30
 
     steps:
       - name: Descargar repositorio
@@ -86,6 +131,8 @@ jobs:
           archivo="$objetivo/deploy/raspberry/.env.runtime"
           {
             printf 'SHOP_HTTP_PORT=%s\n' '3102'
+            printf 'BACKEND_IMAGE=%s\n' 'ghcr.io/raydan08x/e-commerce-sd-fullstack/backend:${{ github.sha }}'
+            printf 'FRONTEND_IMAGE=%s\n' 'ghcr.io/raydan08x/e-commerce-sd-fullstack/frontend:${{ github.sha }}'
             printf 'DB_URL=%s\n' "$DB_URL"
             printf 'DB_USERNAME=%s\n' "$DB_USERNAME"
             printf 'DB_PASSWORD=%s\n' "$DB_PASSWORD"
@@ -114,7 +161,7 @@ jobs:
             printf 'PI_MYSQL_ROOT_PASSWORD=%s\n' "$PI_MYSQL_ROOT_PASSWORD"
           } > "$archivo"
 
-      - name: Construir y desplegar contenedores
+      - name: Descargar y desplegar contenedores
         shell: bash
         run: |
           cd /home/sdpi/e-commerce-sd-fullstack
@@ -122,11 +169,9 @@ jobs:
             --env-file deploy/raspberry/.env.runtime \
             -f deploy/raspberry/compose.yaml)
 
-          # La Raspberry usa almacenamiento SD: descargar y construir de forma
-          # secuencial evita saturar I/O y el límite de sesiones de BuildKit.
-          "${compose[@]}" pull mysql-local
-          "${compose[@]}" build backend
-          "${compose[@]}" build frontend
+          echo '${{ github.token }}' | docker login ghcr.io \
+            --username '${{ github.actor }}' --password-stdin
+          "${compose[@]}" pull
           "${compose[@]}" up -d --no-build --remove-orphans
 
       - name: Verificar tienda y API
