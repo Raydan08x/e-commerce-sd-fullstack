@@ -535,3 +535,201 @@ body {
     border-color: #b3a269;
     background: rgba(179, 162, 105, .12);
 }
+
+/* Checkout guiado: los datos de envío y el pago viven en dos vistas separadas. */
+.checkout-shell {
+    overflow: hidden;
+}
+
+.checkout-encabezado {
+    margin-bottom: 24px;
+}
+
+#checkoutPasoTexto {
+    display: block;
+    margin-bottom: 10px;
+    color: rgba(255, 255, 255, .65);
+    font-size: .78rem;
+    letter-spacing: .12em;
+    text-transform: uppercase;
+}
+
+.checkout-pasos {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.checkout-paso {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    color: rgba(255, 255, 255, .55);
+    font-family: var(--fuente-destacados);
+    font-size: .88rem;
+    cursor: pointer;
+}
+
+.checkout-paso span {
+    width: 28px;
+    height: 28px;
+    display: grid;
+    place-items: center;
+    border: 1px solid rgba(255, 255, 255, .25);
+    border-radius: 50%;
+    transition: background .25s ease, border-color .25s ease, color .25s ease;
+}
+
+.checkout-paso.is-active,
+.checkout-paso.is-complete {
+    color: var(--color-blanco-hueso);
+}
+
+.checkout-paso.is-active span,
+.checkout-paso.is-complete span {
+    border-color: var(--color-dorado);
+    background: var(--color-dorado);
+    color: var(--color-negro);
+}
+
+.checkout-paso[aria-disabled="true"] {
+    cursor: not-allowed;
+    opacity: .65;
+}
+
+.checkout-pasos__linea {
+    flex: 1;
+    height: 1px;
+    background: rgba(179, 162, 105, .3);
+}
+
+.checkout-viewport {
+    overflow: hidden;
+    transition: height .38s ease;
+}
+
+.checkout-track {
+    display: flex;
+    align-items: flex-start;
+    transform: translateX(0);
+    transition: transform .42s cubic-bezier(.22, .75, .25, 1);
+    will-change: transform;
+}
+
+.checkout-track.is-step-2 {
+    transform: translateX(-100%);
+}
+
+.checkout-panel {
+    flex: 0 0 100%;
+    width: 100%;
+    min-width: 0;
+    padding: 2px;
+}
+
+.checkout-panel__titulo {
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+    margin-bottom: 22px;
+}
+
+.checkout-panel__titulo > i {
+    width: 38px;
+    height: 38px;
+    display: grid;
+    place-items: center;
+    flex: 0 0 38px;
+    border-radius: 50%;
+    color: var(--color-dorado);
+    background: rgba(179, 162, 105, .12);
+}
+
+.carrito-total .checkout-panel__titulo h2 {
+    margin: 0;
+    font-size: 2.15rem;
+    line-height: 1;
+}
+
+.checkout-panel__titulo p {
+    margin: 7px 0 0;
+    color: rgba(255, 255, 255, .66);
+    font-size: .88rem;
+    line-height: 1.35;
+}
+
+.checkout-destino-resumen {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 22px;
+    padding: 14px;
+    border: 1px solid rgba(179, 162, 105, .24);
+    border-radius: 12px;
+    background: rgba(179, 162, 105, .07);
+}
+
+.checkout-destino-resumen > i {
+    color: var(--color-dorado);
+    font-size: 1.35rem;
+}
+
+.checkout-destino-resumen div {
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+}
+
+.checkout-destino-resumen strong,
+.checkout-destino-resumen span,
+.checkout-destino-resumen small {
+    overflow-wrap: anywhere;
+}
+
+.checkout-destino-resumen span,
+.checkout-destino-resumen small {
+    color: rgba(255, 255, 255, .68);
+}
+
+.checkout-volver {
+    width: 100%;
+    margin-top: 14px;
+    padding: 10px;
+    border: 0;
+    background: transparent;
+    color: var(--color-dorado);
+    font-family: var(--fuente-destacados);
+}
+
+.checkout-volver:hover,
+.checkout-volver:focus-visible {
+    color: var(--color-blanco-hueso);
+    outline: none;
+}
+
+.checkout-mensaje {
+    min-height: 1.4rem;
+    margin: 16px 2px 0;
+    color: var(--color-dorado);
+    font-size: .9rem;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .checkout-track,
+    .checkout-viewport {
+        transition: none;
+    }
+}
+
+@media (max-width: 420px) {
+    .checkout-paso {
+        font-size: .78rem;
+    }
+
+    .carrito-total .checkout-panel__titulo h2 {
+        font-size: 1.85rem;
+    }
+}

@@ -14,8 +14,7 @@ function mostrarMensaje(tipo, texto) {
 const emailRegistro = sessionStorage.getItem("ultimoRegistroSierraDorada");
 if (emailRegistro) {
     usuarioInput.value = emailRegistro;
-    sessionStorage.removeItem("ultimoRegistroSierraDorada");
-    mostrarMensaje("success", "Cuenta creada correctamente. Inicia sesión.");
+    mostrarMensaje("info", "Confirma primero el enlace que enviamos a tu correo.");
 }
 
 form.addEventListener("submit", async event => {
@@ -38,7 +37,13 @@ form.addEventListener("submit", async event => {
             ? "admin.html"
             : (regreso || "productos.html");
     } catch (error) {
-        mostrarMensaje("danger", error.message);
+        if (error.message.toLowerCase().includes("confirmar tu correo")) {
+            sessionStorage.setItem("ultimoRegistroSierraDorada", usuario);
+            mensaje.className = "alert alert-warning mt-3";
+            mensaje.innerHTML = `${error.message}. <a href="verificar-correo.html?email=${encodeURIComponent(usuario)}">Reenviar confirmación</a>`;
+        } else {
+            mostrarMensaje("danger", error.message);
+        }
     } finally {
         boton.disabled = false;
     }

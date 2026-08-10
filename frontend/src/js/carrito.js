@@ -16,8 +16,55 @@ const botonCotizar = document.getElementById("btnCotizarEnvio");
 const botonValidarDestino = document.getElementById("btnValidarDestino");
 const municipioSeleccionado = document.getElementById("municipioSeleccionado");
 const botonPagar = document.getElementById("btnPagarBold");
+const botonSiguiente = document.getElementById("btnSiguienteCheckout");
+const botonAnterior = document.getElementById("btnAnteriorCheckout");
+const checkoutTrack = document.getElementById("checkoutTrack");
+const checkoutViewport = document.querySelector(".checkout-viewport");
+const checkoutPasoTexto = document.getElementById("checkoutPasoTexto");
+const checkoutPanels = [...document.querySelectorAll("[data-checkout-panel]")];
+const checkoutSteps = [...document.querySelectorAll("[data-checkout-step]")];
+const resumenDestinatario = document.getElementById("resumenDestinatario");
+const resumenDireccion = document.getElementById("resumenDireccion");
+const resumenTransportadora = document.getElementById("resumenTransportadora");
 
 let cotizacionSeleccionada = null;
+let pasoCheckout = 1;
+let resumenHabilitado = false;
+
+function ajustarAltoCheckout() {
+    const panel = checkoutPanels.find(item => Number(item.dataset.checkoutPanel) === pasoCheckout);
+    if (panel) checkoutViewport.style.height = `${panel.scrollHeight + 4}px`;
+}
+
+function cambiarPasoCheckout(paso) {
+    if (paso === 2 && !resumenHabilitado) return;
+    pasoCheckout = paso;
+    checkoutTrack.classList.toggle("is-step-2", paso === 2);
+    checkoutPasoTexto.textContent = `Paso ${paso} de 2`;
+
+    checkoutPanels.forEach(panel => {
+        const activo = Number(panel.dataset.checkoutPanel) === paso;
+        panel.setAttribute("aria-hidden", String(!activo));
+        panel.inert = !activo;
+    });
+    checkoutSteps.forEach(indicador => {
+        const numero = Number(indicador.dataset.checkoutStep);
+        indicador.classList.toggle("is-active", numero === paso);
+        indicador.classList.toggle("is-complete", numero < paso);
+        indicador.toggleAttribute("aria-current", numero === paso);
+        if (numero === 2) indicador.setAttribute("aria-disabled", String(!resumenHabilitado));
+    });
+    requestAnimationFrame(ajustarAltoCheckout);
+}
+
+function actualizarResumenCheckout() {
+    const nombre = document.getElementById("destinatarioNombre").value.trim();
+    const apellido = document.getElementById("destinatarioApellido").value.trim();
+    const direccion = document.getElementById("direccionEnvio").value.trim();
+    resumenDestinatario.textContent = `${nombre} ${apellido}`.trim();
+    resumenDireccion.textContent = direccion;
+    resumenTransportadora.textContent = `${cotizacionSeleccionada.deliveryCompanyName} · ${moneda(cotizacionSeleccionada.shippingCost)}`;
+}
 
 function nombreUbicacion(ubicacion) {
     const nombre = ubicacion.locationName || ubicacion.cityName || ubicacion.name
@@ -56,10 +103,12 @@ function actualizarTotales() {
 
 function invalidarPedido() {
     cotizacionSeleccionada = null;
+    resumenHabilitado = false;
     opciones.innerHTML = "";
     delete botonPagar.dataset.pedidoId;
     delete botonPagar.dataset.total;
     actualizarTotales();
+    cambiarPasoCheckout(1);
 }
 
 function mostrarCarrito() {
@@ -176,15 +225,52 @@ botonCotizar.addEventListener("click", async () => {
                 delete botonPagar.dataset.pedidoId;
                 actualizarTotales();
                 mensajeEnvio.textContent = "Transportadora seleccionada.";
+                requestAnimationFrame(ajustarAltoCheckout);
             });
         });
         mensajeEnvio.textContent = "Selecciona una opción de envío.";
+        requestAnimationFrame(ajustarAltoCheckout);
     } catch (error) {
         mensajeEnvio.textContent = error.message;
     } finally {
         botonCotizar.disabled = false;
     }
 });
+
+botonSiguiente.addEventListener("click", () => {
+    if (!obtenerCarrito().length) {
+        mensajeEnvio.textContent = "Agrega productos antes de continuar.";
+        return;
+    }
+    if (!formEnvio.reportValidity()) {
+        mensajeEnvio.textContent = "Completa los datos obligatorios de envío.";
+        return;
+    }
+    if (!cotizacionSeleccionada) {
+        mensajeEnvio.textContent = "Cotiza y selecciona una transportadora para continuar.";
+        botonCotizar.focus();
+        return;
+    }
+
+    actualizarResumenCheckout();
+    resumenHabilitado = true;
+    mensajeEnvio.textContent = "Revisa el resumen antes de pagar.";
+    cambiarPasoCheckout(2);
+});
+
+botonAnterior.addEventListener("click", () => cambiarPasoCheckout(1));
+checkoutSteps.forEach(indicador => {
+    indicador.addEventListener("click", () => {
+        const paso = Number(indicador.dataset.checkoutStep);
+        if (paso === 2 && !resumenHabilitado) {
+            botonSiguiente.click();
+            return;
+        }
+        cambiarPasoCheckout(paso);
+    });
+});
+
+window.addEventListener("resize", ajustarAltoCheckout);
 
 botonPagar.addEventListener("click", async event => {
     if (botonPagar.dataset.pedidoId) return;
@@ -229,3 +315,5 @@ botonPagar.addEventListener("click", async event => {
 }, true);
 
 mostrarCarrito();
+cambiarPasoCheckout(1);
+window.addEventListener("load", ajustarAltoCheckout, { once: true });

@@ -62,6 +62,9 @@ public class Usuario {
 
     private Boolean activo = true;
 
+    @Column(name = "email_verificado", nullable = false)
+    private Boolean emailVerificado = true;
+
     @Enumerated(EnumType.STRING)
     private Rol rol = Rol.CLIENTE;
 
@@ -84,6 +87,9 @@ public class Usuario {
         }
         if (activo == null) {
             activo = true;
+        }
+        if (emailVerificado == null) {
+            emailVerificado = true;
         }
         if (rol == null) {
             rol = Rol.CLIENTE;
@@ -183,6 +189,14 @@ public class Usuario {
 
     public void setActivo(Boolean activo) {
         this.activo = activo;
+    }
+
+    public Boolean getEmailVerificado() {
+        return emailVerificado;
+    }
+
+    public void setEmailVerificado(Boolean emailVerificado) {
+        this.emailVerificado = emailVerificado;
     }
 
     public Rol getRol() {
