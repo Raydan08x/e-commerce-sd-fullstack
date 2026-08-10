@@ -7,7 +7,7 @@ import {
     normalizarProducto,
     obtenerSesion,
     productoParaApi
-} from './api.js';
+} from './api.js?v=20260810-2';
 
 window.toastManager = new ToastManager();
 
@@ -205,11 +205,17 @@ function protegerRutaAdmin() {
 
 // --- LÓGICA DE DATOS (PRODUCTOS) ---
 async function cargarProductos() {
+    mensajeTabla.textContent = "Cargando productos desde el servidor...";
+    tablaProductos.innerHTML = Array.from({ length: 5 }, () => `
+        <tr class="admin-tabla-skeleton" aria-hidden="true">
+            <td colspan="9"><span></span></td>
+        </tr>`).join("");
     try {
         [productos, categorias] = await Promise.all([
             catalogoApi.listar(false),
             catalogoApi.categorias()
         ]);
+        mensajeTabla.textContent = "";
     } catch (error) {
         console.error("No se pudo cargar el catálogo desde la API:", error);
         mensajeTabla.textContent = `Error: ${error.message}`;

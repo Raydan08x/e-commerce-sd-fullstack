@@ -4,6 +4,7 @@ import com.sierra_dorada.config.MiPaqueteProperties;
 import com.sierra_dorada.dto.CotizacionEnvioRequest;
 import com.sierra_dorada.dto.CrearPedidoRequest;
 import com.sierra_dorada.dto.DetallePedidoRequest;
+import com.sierra_dorada.dto.UbicacionResponse;
 import com.sierra_dorada.exception.ConflictoException;
 import com.sierra_dorada.exception.IntegracionExternaException;
 import com.sierra_dorada.exception.RecursoNoEncontradoException;
@@ -22,9 +23,14 @@ import tools.jackson.databind.ObjectMapper;
 import java.math.BigDecimal;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
+import java.text.Normalizer;
+import java.util.Comparator;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 @Service
 public class EnvioService {
@@ -46,8 +52,61 @@ public class EnvioService {
         this.objectMapper = objectMapper;
     }
 
-    public List<Map<String, Object>> ubicaciones(String codigo) {
-        return cliente.obtenerUbicaciones(codigo);
+    public List<UbicacionResponse> ubicaciones(String consulta) {
+        String criterio = normalizar(consulta);
+        if (criterio.length() < 2) {
+            return List.of();
+        }
+
+        return cliente.obtenerUbicaciones().stream()
+            .map(this::convertirUbicacion)
+            .filter(ubicacion -> coincide(ubicacion, criterio))
+            .sorted(Comparator
+                .comparingInt((UbicacionResponse ubicacion) -> prioridad(ubicacion, criterio))
+                .thenComparing(UbicacionResponse::nombre)
+                .thenComparing(UbicacionResponse::departamento))
+            .collect(Collectors.toMap(
+                UbicacionResponse::codigo,
+                Function.identity(),
+                (primera, repetida) -> primera,
+                LinkedHashMap::new))
+            .values().stream()
+            .limit(12)
+            .toList();
+    }
+
+    private UbicacionResponse convertirUbicacion(Map<String, Object> ubicacion) {
+        return new UbicacionResponse(
+            texto(ubicacion.get("locationCode")),
+            texto(ubicacion.get("locationName")),
+            texto(ubicacion.get("departmentOrStateName")));
+    }
+
+    private boolean coincide(UbicacionResponse ubicacion, String criterio) {
+        String codigo = normalizar(ubicacion.codigo());
+        String nombreCompleto = normalizar(ubicacion.nombre() + " " + ubicacion.departamento());
+        return codigo.startsWith(criterio)
+            || java.util.Arrays.stream(criterio.split("\\s+"))
+                .allMatch(nombreCompleto::contains);
+    }
+
+    private int prioridad(UbicacionResponse ubicacion, String criterio) {
+        String nombre = normalizar(ubicacion.nombre());
+        if (nombre.equals(criterio)) return 0;
+        if (nombre.startsWith(criterio)) return 1;
+        return 2;
+    }
+
+    private String normalizar(String texto) {
+        if (!StringUtils.hasText(texto)) return "";
+        return Normalizer.normalize(texto, Normalizer.Form.NFD)
+            .replaceAll("\\p{M}", "")
+            .toLowerCase(Locale.ROOT)
+            .trim();
+    }
+
+    private String texto(Object valor) {
+        return valor == null ? "" : String.valueOf(valor).trim();
     }
 
     public List<Map<String, Object>> cotizar(CotizacionEnvioRequest solicitud) {

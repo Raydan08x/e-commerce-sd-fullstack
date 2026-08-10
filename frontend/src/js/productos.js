@@ -1,11 +1,21 @@
-import { ProductDetailsModal } from './components/ProductDetailsModal.js';
+import { ProductDetailsModal } from './components/ProductDetailsModal.js?v=20260810-2';
 import { agregarProducto } from './carritoStorage.js?v=20260715-3';
-import { catalogoApi } from './api.js';
+import { catalogoApi } from './api.js?v=20260810-2';
 
 const IMAGEN_PLACEHOLDER = "https://placehold.co/600x400/222223/B3A269?text=Imagen+Pendiente";
 
 const catalogoProductos = document.getElementById("catalogoProductos");
-const productDetailsModal = new ProductDetailsModal();
+
+function agregarAlCarrito(producto) {
+    if (Number(producto?.stock || 0) <= 0) {
+        window.toastManager?.show("Este producto está agotado.", "error");
+        return;
+    }
+    agregarProducto(producto);
+    window.toastManager?.show("Producto agregado al carrito.", "success");
+}
+
+const productDetailsModal = new ProductDetailsModal({ onAdd: agregarAlCarrito });
 
 // --- HELPERS DE IMÁGENES (compatibles con admin.js) ---
 function normalizarImagenes(producto) {
@@ -70,6 +80,10 @@ function cumpleEstilo(producto, estilo) {
 }
 
 async function mostrarCatalogo() {
+    catalogoProductos.innerHTML = Array.from({ length: 6 }, () => `
+        <div class="producto-skeleton" aria-hidden="true">
+            <span></span><i></i><i></i><i></i>
+        </div>`).join("");
     productosGlobales = await obtenerProductos();
     renderizarCatalogo();
 }
@@ -153,7 +167,7 @@ function renderizarCatalogo() {
                             `).join('');
                 const items = imagenes.map((img, i) => `
                                 <div class="carousel-item ${i === 0 ? 'active' : ''}">
-                                    <img src="${img.url}" onerror="this.src='${IMAGEN_PLACEHOLDER}'" alt="${producto.name} - ${i + 1}" class="producto-img" style="object-fit: ${img.fit || 'cover'}; height: 220px;">
+                                    <img src="${img.url}" loading="lazy" decoding="async" onerror="this.src='${IMAGEN_PLACEHOLDER}'" alt="${producto.name} - ${i + 1}" class="producto-img" style="object-fit: ${img.fit || 'cover'}; height: 220px;">
                                 </div>
                             `).join('');
                 imagenHtml = `
@@ -173,7 +187,7 @@ function renderizarCatalogo() {
             } else {
                 imagenHtml = `
                                 <div class="producto-img-container"${imagenPrincipal.fit === 'contain' ? ' style="background-color: #111;"' : ''}>
-                                    <img src="${imagenPrincipal.url}" onerror="this.src='${IMAGEN_PLACEHOLDER}'" alt="${producto.name}" class="producto-img" style="object-fit: ${imagenPrincipal.fit || 'cover'};">
+                                    <img src="${imagenPrincipal.url}" loading="lazy" decoding="async" onerror="this.src='${IMAGEN_PLACEHOLDER}'" alt="${producto.name}" class="producto-img" style="object-fit: ${imagenPrincipal.fit || 'cover'};">
                                     <div class="producto-img-overlay"></div>
                                 </div>
                             `;
@@ -267,11 +281,7 @@ function renderizarCatalogo() {
                 return;
             }
 
-            agregarProducto(producto);
-
-            if (window.toastManager) {
-                window.toastManager.show("Producto agregado al carrito.", "success");
-            }
+            agregarAlCarrito(producto);
         });
 
     });

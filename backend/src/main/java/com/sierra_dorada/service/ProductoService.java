@@ -7,6 +7,8 @@ import com.sierra_dorada.model.Producto;
 import com.sierra_dorada.repository.CategoriaRepository;
 import com.sierra_dorada.repository.ProductoRepository;
 import java.util.List;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -20,6 +22,8 @@ public class ProductoService {
         this.categorias = categorias;
     }
 
+    @Cacheable(value = "productos",
+        condition = "(#textoBusqueda == null || #textoBusqueda.isBlank()) && #categoriaId == null")
     public List<Producto> listar(boolean soloActivos, String textoBusqueda, Integer categoriaId) {
         if (textoBusqueda != null && !textoBusqueda.isBlank()) {
             return productos.findByNombreContainingIgnoreCase(textoBusqueda);
@@ -35,12 +39,14 @@ public class ProductoService {
                 .orElseThrow(() -> new RecursoNoEncontradoException("Producto no encontrado"));
     }
 
+    @CacheEvict(value = "productos", allEntries = true)
     public Producto crear(Producto producto) {
         validarCodigoDisponible(producto.getCodigo(), null);
         producto.setId(null);
         return guardar(producto);
     }
 
+    @CacheEvict(value = "productos", allEntries = true)
     public Producto actualizar(Integer id, Producto datos) {
         Producto actual = obtener(id);
         validarCodigoDisponible(datos.getCodigo(), id);
@@ -49,6 +55,7 @@ public class ProductoService {
         return guardar(datos);
     }
 
+    @CacheEvict(value = "productos", allEntries = true)
     public void eliminar(Integer id) {
         Producto producto = obtener(id);
         producto.setActivo(false);

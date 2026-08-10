@@ -5,6 +5,7 @@ import com.sierra_dorada.exception.IntegracionExternaException;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.util.StringUtils;
 import org.springframework.web.client.RestClient;
 import org.springframework.web.client.RestClientException;
@@ -26,17 +27,12 @@ public class MiPaqueteClient {
         this.cliente = RestClient.create(propiedades.getBaseUrl());
     }
 
-    public List<Map<String, Object>> obtenerUbicaciones(String codigo) {
+    @Cacheable("ubicacionesMiPaquete")
+    public List<Map<String, Object>> obtenerUbicaciones() {
         validarConfiguracion(false);
         try {
             return cliente.get()
-                .uri(uri -> {
-                    var constructor = uri.path("/getLocations");
-                    if (StringUtils.hasText(codigo)) {
-                        constructor.queryParam("locationCode", codigo);
-                    }
-                    return constructor.build();
-                })
+                .uri("/getLocations")
                 .headers(this::agregarAutenticacion)
                 .retrieve()
                 .body(LISTA_MAPAS);
