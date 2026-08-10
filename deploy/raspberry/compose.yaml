@@ -27,7 +27,7 @@ services:
     build:
       context: ../..
       dockerfile: backend/Dockerfile
-    image: ecommerce-sd-backend:raspberry
+    image: ${BACKEND_IMAGE:-ecommerce-sd-backend:raspberry}
     restart: unless-stopped
     env_file:
       - ${RUNTIME_ENV_FILE:-.env.runtime}
@@ -52,7 +52,7 @@ services:
     build:
       context: ../..
       dockerfile: deploy/raspberry/frontend.Dockerfile
-    image: ecommerce-sd-frontend:raspberry
+    image: ${FRONTEND_IMAGE:-ecommerce-sd-frontend:raspberry}
     restart: unless-stopped
     depends_on:
       backend:
