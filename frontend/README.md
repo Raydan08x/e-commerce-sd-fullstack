@@ -5,7 +5,8 @@ Frontend estático conectado al backend Spring Boot.
 ## Configuración
 
 La API se toma de `window.SIERRA_DORADA_API_URL`. En local usa
-`http://localhost:8080/api`; en producción usa el servicio AWS ECS configurado.
+`http://localhost:8080/api`; en producción usa `/api` en el mismo dominio y
+Nginx la dirige al contenedor Spring Boot.
 
 El sitio de producción se publica automáticamente en:
 
