@@ -128,6 +128,12 @@ export const authApi = {
     }),
     registro: datos => api("/auth/registro", {
         method: "POST", autenticado: false, body: JSON.stringify(datos)
+    }),
+    verificarCorreo: token => api("/auth/verificar-correo", {
+        method: "POST", autenticado: false, body: JSON.stringify({ token })
+    }),
+    reenviarVerificacion: email => api("/auth/reenviar-verificacion", {
+        method: "POST", autenticado: false, body: JSON.stringify({ email })
     })
 };
 

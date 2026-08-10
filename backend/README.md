@@ -24,6 +24,9 @@ Flyway se ejecuta al iniciar la aplicación. En instalaciones antiguas usa basel
 | `JWT_SECRET` | Secreto JWT de al menos 32 bytes |
 | `CORS_ALLOWED_ORIGINS` | Orígenes frontend separados por coma |
 | `BOLD_SECRET_KEY` | Firma segura de pagos Bold |
+| `MAIL_USERNAME` / `MAIL_PASSWORD` | Cuenta SMTP y contraseña de aplicación para confirmar registros |
+| `MAIL_FROM` | Remitente visible de los correos de confirmación |
+| `APP_PUBLIC_URL` | URL pública usada para construir el enlace de activación |
 | `MIPAQUETE_API_KEY` | API key de Mi Paquete |
 | `MIPAQUETE_SESSION_TRACKER` | Identificador de sesión de la integración |
 | `MIPAQUETE_ORIGIN_DANE_CODE` | Código DANE de la bodega |

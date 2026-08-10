@@ -11,10 +11,17 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 import org.springframework.http.MediaType;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.mail.SimpleMailMessage;
+import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.mockito.Mockito.clearInvocations;
+import static org.mockito.Mockito.verify;
+import org.mockito.ArgumentCaptor;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
@@ -36,26 +43,60 @@ class AuthIntegrationTests {
     @Autowired
     private PasswordEncoder codificadorContrasenas;
 
+    @MockitoBean
+    private JavaMailSender correo;
+
     @Test
     void ejecutaConJava21() {
         assertEquals(21, Runtime.version().feature());
     }
 
     @Test
-    void registraUsuarioPermiteLoginYExponeCatalogoPublico() throws Exception {
+    void registraConfirmaCorreoPermiteLoginYExponeCatalogoPublico() throws Exception {
+        clearInvocations(correo);
         String registro = """
             {"nombre":"Ana","apellidos":"Cliente","fechaNacimiento":"1995-05-10",
              "genero":"Femenino","direccion":"Bogotá","telefono":"3001234567",
              "email":"ana@example.com","password":"secreto123","aceptaTerminos":true,
              "autorizaDatos":true,"autorizaComunicaciones":false}
-            """;
+        """;
         mvc.perform(post("/api/auth/registro").contentType(MediaType.APPLICATION_JSON).content(registro))
-            .andExpect(status().isCreated()).andExpect(jsonPath("$.token").isNotEmpty())
-            .andExpect(jsonPath("$.rol").value("cliente"));
+            .andExpect(status().isAccepted())
+            .andExpect(jsonPath("$.email").value("ana@example.com"))
+            .andExpect(jsonPath("$.mensaje").isNotEmpty());
 
         String login = """
             {"usuario":"ana@example.com","password":"secreto123"}
             """;
+        mvc.perform(post("/api/auth/login").contentType(MediaType.APPLICATION_JSON).content(login))
+            .andExpect(status().isForbidden());
+
+        Usuario pendiente = usuarios.findByEmailIgnoreCase("ana@example.com").orElseThrow();
+        assertFalse(pendiente.getActivo());
+        assertFalse(pendiente.getEmailVerificado());
+
+        ArgumentCaptor<SimpleMailMessage> mensaje = ArgumentCaptor.forClass(SimpleMailMessage.class);
+        verify(correo).send(mensaje.capture());
+        String texto = mensaje.getValue().getText();
+        int inicioToken = texto.indexOf("?token=") + 7;
+        String tokenVerificacion = texto.substring(inicioToken).split("\\s")[0];
+
+        mvc.perform(post("/api/auth/verificar-correo")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("{\"token\":\"" + tokenVerificacion + "\"}"))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.token").isNotEmpty())
+            .andExpect(jsonPath("$.rol").value("cliente"));
+
+        mvc.perform(get("/api/pedidos")
+                .header("Authorization", "Bearer " + tokenVerificacion))
+            .andExpect(status().isUnauthorized());
+
+        mvc.perform(post("/api/auth/verificar-correo")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("{\"token\":\"" + tokenVerificacion + "\"}"))
+            .andExpect(status().isBadRequest());
+
         mvc.perform(post("/api/auth/login").contentType(MediaType.APPLICATION_JSON).content(login))
             .andExpect(status().isOk()).andExpect(jsonPath("$.tipo").value("Bearer"));
 
@@ -120,19 +161,18 @@ class AuthIntegrationTests {
              "autorizaDatos":true,"autorizaComunicaciones":true}
             """;
 
-        String respuestaRegistro = mvc.perform(post("/api/auth/registro")
+        mvc.perform(post("/api/auth/registro")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(registro))
-            .andExpect(status().isCreated())
-            .andReturn()
-            .getResponse()
-            .getContentAsString();
+            .andExpect(status().isAccepted());
 
-        Integer usuarioId = JsonPath.read(respuestaRegistro, "$.id");
-        String token = JsonPath.read(respuestaRegistro, "$.token");
-        Usuario usuario = usuarios.findById(usuarioId).orElseThrow();
+        Usuario usuario = usuarios.findByEmailIgnoreCase("laura.admin@example.com").orElseThrow();
+        Integer usuarioId = usuario.getId();
         usuario.setRol(Rol.ADMIN);
+        usuario.setActivo(true);
+        usuario.setEmailVerificado(true);
         usuarios.save(usuario);
+        String token = servicioJwt.generar(usuario);
 
         String actualizacion = """
             {"nombres":"Laura María","apellidos":"Administradora","fechaNacimiento":"1992-04-15",
@@ -159,15 +199,17 @@ class AuthIntegrationTests {
              "autorizaDatos":true,"autorizaComunicaciones":false}
             """;
 
-        String respuesta = mvc.perform(post("/api/auth/registro")
+        mvc.perform(post("/api/auth/registro")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(registro))
-            .andExpect(status().isCreated())
-            .andReturn()
-            .getResponse()
-            .getContentAsString();
+            .andExpect(status().isAccepted());
 
-        return JsonPath.read(respuesta, "$.token");
+        Usuario usuario = usuarios.findByEmailIgnoreCase("cliente.permisos@example.com")
+            .orElseThrow();
+        usuario.setActivo(true);
+        usuario.setEmailVerificado(true);
+        usuarios.save(usuario);
+        return servicioJwt.generar(usuario);
     }
 
     @Test

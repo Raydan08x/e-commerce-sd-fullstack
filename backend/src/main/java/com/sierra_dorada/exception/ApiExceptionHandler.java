@@ -48,6 +48,12 @@ public class ApiExceptionHandler {
         return respuesta(HttpStatus.UNAUTHORIZED, excepcion.getMessage());
     }
 
+    @ExceptionHandler(CuentaNoVerificadaException.class)
+    ResponseEntity<Map<String, Object>> cuentaNoVerificada(
+            CuentaNoVerificadaException excepcion) {
+        return respuesta(HttpStatus.FORBIDDEN, excepcion.getMessage());
+    }
+
     @ExceptionHandler(IntegracionExternaException.class)
     ResponseEntity<Map<String, Object>> integracion(IntegracionExternaException excepcion) {
         return respuesta(HttpStatus.BAD_GATEWAY, excepcion.getMessage());

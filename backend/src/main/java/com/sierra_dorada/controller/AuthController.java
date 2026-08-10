@@ -2,7 +2,10 @@ package com.sierra_dorada.controller;
 
 import com.sierra_dorada.dto.AuthResponse;
 import com.sierra_dorada.dto.LoginRequest;
+import com.sierra_dorada.dto.ReenviarVerificacionRequest;
+import com.sierra_dorada.dto.RegistroPendienteResponse;
 import com.sierra_dorada.dto.RegistroRequest;
+import com.sierra_dorada.dto.VerificarCorreoRequest;
 import com.sierra_dorada.service.AuthService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
@@ -25,7 +28,20 @@ public class AuthController {
     }
 
     @PostMapping("/api/auth/registro")
-    public ResponseEntity<AuthResponse> registro(@Valid @RequestBody RegistroRequest solicitud) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(servicio.registrar(solicitud));
+    public ResponseEntity<RegistroPendienteResponse> registro(
+            @Valid @RequestBody RegistroRequest solicitud) {
+        return ResponseEntity.status(HttpStatus.ACCEPTED).body(servicio.registrar(solicitud));
+    }
+
+    @PostMapping("/api/auth/verificar-correo")
+    public AuthResponse verificarCorreo(@Valid @RequestBody VerificarCorreoRequest solicitud) {
+        return servicio.verificarCorreo(solicitud.token());
+    }
+
+    @PostMapping("/api/auth/reenviar-verificacion")
+    public ResponseEntity<Void> reenviarVerificacion(
+            @Valid @RequestBody ReenviarVerificacionRequest solicitud) {
+        servicio.reenviarVerificacion(solicitud.email());
+        return ResponseEntity.noContent().build();
     }
 }

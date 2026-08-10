@@ -73,15 +73,17 @@ form.addEventListener("submit", async event => {
     const boton = form.querySelector('button[type="submit"]');
     boton.disabled = true;
     try {
-        await authApi.registro(datos);
+        const respuesta = await authApi.registro(datos);
         sessionStorage.setItem("ultimoRegistroSierraDorada", datos.email);
         mensajes.className = "alert alert-success mt-3";
-        mensajes.textContent = "Cuenta creada en el servidor. Te llevaremos al inicio de sesión.";
-        setTimeout(() => window.location.href = "login.html", 900);
+        mensajes.textContent = respuesta.mensaje
+            || "Te enviamos un correo para confirmar y activar la cuenta.";
+        setTimeout(() => {
+            window.location.href = `verificar-correo.html?email=${encodeURIComponent(datos.email)}`;
+        }, 1200);
     } catch (error) {
         mostrarErrores([error.message]);
     } finally {
         boton.disabled = false;
     }
 });
-

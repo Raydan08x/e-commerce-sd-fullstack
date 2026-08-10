@@ -100,6 +100,12 @@ jobs:
           CORS_ALLOWED_ORIGINS: ${{ secrets.CORS_ALLOWED_ORIGINS }}
           BOLD_SECRET_KEY: ${{ secrets.BOLD_SECRET_KEY }}
           BOLD_CURRENCY: ${{ secrets.BOLD_CURRENCY }}
+          MAIL_HOST: ${{ secrets.MAIL_HOST }}
+          MAIL_PORT: ${{ secrets.MAIL_PORT }}
+          MAIL_USERNAME: ${{ secrets.MAIL_USERNAME }}
+          MAIL_PASSWORD: ${{ secrets.MAIL_PASSWORD }}
+          MAIL_FROM: ${{ secrets.MAIL_FROM }}
+          APP_PUBLIC_URL: ${{ secrets.APP_PUBLIC_URL }}
           MIPAQUETE_BASE_URL: ${{ secrets.MIPAQUETE_BASE_URL }}
           MIPAQUETE_API_KEY: ${{ secrets.MIPAQUETE_API_KEY }}
           MIPAQUETE_SESSION_TRACKER: ${{ secrets.MIPAQUETE_SESSION_TRACKER }}
@@ -140,6 +146,12 @@ jobs:
             printf 'CORS_ALLOWED_ORIGINS=%s\n' "$CORS_ALLOWED_ORIGINS"
             printf 'BOLD_SECRET_KEY=%s\n' "$BOLD_SECRET_KEY"
             printf 'BOLD_CURRENCY=%s\n' "${BOLD_CURRENCY:-COP}"
+            printf 'MAIL_HOST=%s\n' "${MAIL_HOST:-smtp.gmail.com}"
+            printf 'MAIL_PORT=%s\n' "${MAIL_PORT:-587}"
+            printf 'MAIL_USERNAME=%s\n' "$MAIL_USERNAME"
+            printf 'MAIL_PASSWORD=%s\n' "$MAIL_PASSWORD"
+            printf 'MAIL_FROM=%s\n' "${MAIL_FROM:-$MAIL_USERNAME}"
+            printf 'APP_PUBLIC_URL=%s\n' "${APP_PUBLIC_URL:-https://shop.sierradorada.co}"
             printf 'MIPAQUETE_BASE_URL=%s\n' "$MIPAQUETE_BASE_URL"
             printf 'MIPAQUETE_API_KEY=%s\n' "$MIPAQUETE_API_KEY"
             printf 'MIPAQUETE_SESSION_TRACKER=%s\n' "$MIPAQUETE_SESSION_TRACKER"
