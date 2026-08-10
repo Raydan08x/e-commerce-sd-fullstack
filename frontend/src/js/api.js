@@ -1,5 +1,9 @@
+const ES_LOCAL = ["localhost", "127.0.0.1"].includes(window.location.hostname);
+const API_POR_DEFECTO = ES_LOCAL
+    ? "http://localhost:8080/api"
+    : "https://si-561086332337450a9acbd55e688f8484.ecs.us-east-1.on.aws/api";
 const API_BASE_URL = String(
-    window.SIERRA_DORADA_API_URL || "http://localhost:8080/api"
+    window.SIERRA_DORADA_API_URL || API_POR_DEFECTO
 ).replace(/\/$/, "");
 
 const CLAVE_SESION = "sesionSierraDorada";

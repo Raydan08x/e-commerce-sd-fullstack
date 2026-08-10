@@ -159,6 +159,10 @@ jobs:
                 "value": "${{ secrets.BOLD_SECRET_KEY }}"
               },
               {
+                "name": "BOLD_CURRENCY",
+                "value": "${{ secrets.BOLD_CURRENCY }}"
+              },
+              {
                 "name": "MIPAQUETE_BASE_URL",
                 "value": "${{ secrets.MIPAQUETE_BASE_URL }}"
               },
@@ -175,6 +179,14 @@ jobs:
                 "value": "${{ secrets.MIPAQUETE_ORIGIN_DANE_CODE }}"
               },
               {
+                "name": "MIPAQUETE_ORIGIN_COUNTRY_CODE",
+                "value": "${{ secrets.MIPAQUETE_ORIGIN_COUNTRY_CODE }}"
+              },
+              {
+                "name": "MIPAQUETE_REQUEST_PICKUP",
+                "value": "${{ secrets.MIPAQUETE_REQUEST_PICKUP }}"
+              },
+              {
                 "name": "MIPAQUETE_SENDER_EMAIL",
                 "value": "${{ secrets.MIPAQUETE_SENDER_EMAIL }}"
               },
@@ -185,6 +197,14 @@ jobs:
               {
                 "name": "MIPAQUETE_SENDER_DOCUMENT",
                 "value": "${{ secrets.MIPAQUETE_SENDER_DOCUMENT }}"
+              },
+              {
+                "name": "MIPAQUETE_SENDER_DOCUMENT_TYPE",
+                "value": "${{ secrets.MIPAQUETE_SENDER_DOCUMENT_TYPE }}"
+              },
+              {
+                "name": "MIPAQUETE_SENDER_NAME",
+                "value": "${{ secrets.MIPAQUETE_SENDER_NAME }}"
               },
               {
                 "name": "MIPAQUETE_SENDER_ADDRESS",

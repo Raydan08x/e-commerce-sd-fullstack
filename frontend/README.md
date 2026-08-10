@@ -4,7 +4,12 @@ Frontend estático conectado al backend Spring Boot.
 
 ## Configuración
 
-La API se toma de `window.SIERRA_DORADA_API_URL`; si no se define, usa `http://localhost:8080/api`.
+La API se toma de `window.SIERRA_DORADA_API_URL`. En local usa
+`http://localhost:8080/api`; en producción usa el servicio AWS ECS configurado.
+
+El sitio de producción se publica automáticamente en:
+
+`https://shop.sierradorada.co`
 
 En producción defina la URL antes de cargar los módulos, por ejemplo:
 
@@ -19,4 +24,3 @@ En producción defina la URL antes de cargar los módulos, por ejemplo:
 - No existen catálogos ni usuarios de prueba en JSON/localStorage.
 
 El checkout consulta Mi Paquete a través del backend, crea el pedido con precios recalculados y solicita al backend la firma de integridad de Bold.
-

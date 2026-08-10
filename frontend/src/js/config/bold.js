@@ -1,5 +1,6 @@
 export const BOLD_CONFIG = Object.freeze({
-    apiKey: 'VO_D5fxAHjpzpAEAD1JHMr8wopTwKIsZ4KTx8Cgx97U',
+    // Llave de identidad pública del ambiente de pruebas Bold.
+    apiKey: '9v0NpPhXXDnWItnMs1NZIQhYdXvV9T_Z6ud00VPiMR0',
     currency: 'COP',
-    redirectionUrl: 'https://raydan08x.github.io/e-commerce-sierra-dorada/html/carrito.html'
+    redirectionUrl: 'https://shop.sierradorada.co/html/carrito.html'
 });

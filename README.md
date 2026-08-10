@@ -30,6 +30,8 @@ cd backend
 3. Sirva `frontend/` con un servidor HTTP estático.
 4. Para otra URL de API, defina `window.SIERRA_DORADA_API_URL` antes de cargar los módulos.
 
+Frontend de producción: `https://shop.sierradorada.co`.
+
 ## Verificación
 
 ```powershell
