@@ -1,0 +1,12 @@
+tunnel: 335673f1-97dd-456f-9199-64e30c6bd08a
+credentials-file: /home/sdpi/.cloudflared-ecommerce/credentials.json
+protocol: http2
+no-autoupdate: true
+metrics: 127.0.0.1:20247
+
+ingress:
+  - hostname: shop.sierradorada.co
+    service: http://127.0.0.1:3103
+    originRequest:
+      connectTimeout: 10s
+  - service: http_status:404
