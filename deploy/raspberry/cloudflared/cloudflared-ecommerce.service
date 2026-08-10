@@ -1,0 +1,17 @@
+[Unit]
+Description=Cloudflare Tunnel - e-commerce Sierra Dorada
+After=network-online.target docker.service
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=sdpi
+Group=sdpi
+ExecStart=/usr/bin/cloudflared --config /home/sdpi/.cloudflared-ecommerce/config.yml tunnel run
+Restart=on-failure
+RestartSec=5s
+NoNewPrivileges=true
+PrivateTmp=true
+
+[Install]
+WantedBy=multi-user.target
