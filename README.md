@@ -32,6 +32,18 @@ cd backend
 
 Frontend de producción: `https://shop.sierradorada.co`.
 
+## Raspberry Pi
+
+El despliegue definitivo corre con Docker Compose en
+`/home/sdpi/e-commerce-sd-fullstack`. La configuración está en
+`deploy/raspberry/compose.yaml` e incluye frontend Nginx, backend Spring Boot y
+un MySQL local de contingencia. El backend de producción conserva la conexión
+MySQL/AWS indicada por `DB_URL`; el MySQL local no publica puertos al host.
+
+El workflow `Deploy to Raspberry Pi` se ejecuta en un runner autoalojado con la
+etiqueta `raspberry-sd`, genera `.env.runtime` desde GitHub Secrets y nunca
+versiona contraseñas.
+
 ## Verificación
 
 ```powershell

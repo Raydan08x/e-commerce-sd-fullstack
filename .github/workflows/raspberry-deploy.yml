@@ -1,0 +1,145 @@
+name: Deploy to Raspberry Pi
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+    paths:
+      - "backend/**"
+      - "database/**"
+      - "deploy/raspberry/**"
+      - "frontend/**"
+      - ".github/workflows/raspberry-deploy.yml"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: raspberry-production
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: [self-hosted, linux, ARM64, raspberry-sd]
+    timeout-minutes: 35
+
+    steps:
+      - name: Descargar repositorio
+        uses: actions/checkout@v6
+
+      - name: Verificar secretos obligatorios
+        shell: bash
+        env:
+          DB_URL: ${{ secrets.DB_URL }}
+          DB_USERNAME: ${{ secrets.DB_USERNAME }}
+          DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
+          JWT_SECRET: ${{ secrets.JWT_SECRET }}
+          PI_MYSQL_PASSWORD: ${{ secrets.PI_MYSQL_PASSWORD }}
+          PI_MYSQL_ROOT_PASSWORD: ${{ secrets.PI_MYSQL_ROOT_PASSWORD }}
+        run: |
+          for nombre in DB_URL DB_USERNAME DB_PASSWORD JWT_SECRET PI_MYSQL_PASSWORD PI_MYSQL_ROOT_PASSWORD; do
+            if [ -z "${!nombre}" ]; then
+              echo "Falta configurar el secreto $nombre"
+              exit 1
+            fi
+          done
+
+      - name: Sincronizar archivos y variables
+        shell: bash
+        env:
+          DB_URL: ${{ secrets.DB_URL }}
+          DB_USERNAME: ${{ secrets.DB_USERNAME }}
+          DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
+          JWT_SECRET: ${{ secrets.JWT_SECRET }}
+          CORS_ALLOWED_ORIGINS: ${{ secrets.CORS_ALLOWED_ORIGINS }}
+          BOLD_SECRET_KEY: ${{ secrets.BOLD_SECRET_KEY }}
+          BOLD_CURRENCY: ${{ secrets.BOLD_CURRENCY }}
+          MIPAQUETE_BASE_URL: ${{ secrets.MIPAQUETE_BASE_URL }}
+          MIPAQUETE_API_KEY: ${{ secrets.MIPAQUETE_API_KEY }}
+          MIPAQUETE_SESSION_TRACKER: ${{ secrets.MIPAQUETE_SESSION_TRACKER }}
+          MIPAQUETE_ORIGIN_COUNTRY_CODE: ${{ secrets.MIPAQUETE_ORIGIN_COUNTRY_CODE }}
+          MIPAQUETE_ORIGIN_DANE_CODE: ${{ secrets.MIPAQUETE_ORIGIN_DANE_CODE }}
+          MIPAQUETE_SENDER_NAME: ${{ secrets.MIPAQUETE_SENDER_NAME }}
+          MIPAQUETE_SENDER_EMAIL: ${{ secrets.MIPAQUETE_SENDER_EMAIL }}
+          MIPAQUETE_SENDER_PHONE: ${{ secrets.MIPAQUETE_SENDER_PHONE }}
+          MIPAQUETE_SENDER_DOCUMENT_TYPE: ${{ secrets.MIPAQUETE_SENDER_DOCUMENT_TYPE }}
+          MIPAQUETE_SENDER_DOCUMENT: ${{ secrets.MIPAQUETE_SENDER_DOCUMENT }}
+          MIPAQUETE_SENDER_ADDRESS: ${{ secrets.MIPAQUETE_SENDER_ADDRESS }}
+          MIPAQUETE_USER_ID: ${{ secrets.MIPAQUETE_USER_ID }}
+          MIPAQUETE_REQUEST_PICKUP: ${{ secrets.MIPAQUETE_REQUEST_PICKUP }}
+          MIPAQUETE_WEBHOOK_SECRET: ${{ secrets.MIPAQUETE_WEBHOOK_SECRET }}
+          PI_MYSQL_PASSWORD: ${{ secrets.PI_MYSQL_PASSWORD }}
+          PI_MYSQL_ROOT_PASSWORD: ${{ secrets.PI_MYSQL_ROOT_PASSWORD }}
+        run: |
+          objetivo=/home/sdpi/e-commerce-sd-fullstack
+          case "$objetivo" in
+            /home/sdpi/e-commerce-sd-fullstack) ;;
+            *) echo "Ruta de despliegue no autorizada"; exit 1 ;;
+          esac
+
+          install -d -m 750 "$objetivo"
+          rsync -a --exclude '.git/' --exclude 'deploy/raspberry/.env.runtime' \
+            "$GITHUB_WORKSPACE/" "$objetivo/"
+
+          umask 077
+          archivo="$objetivo/deploy/raspberry/.env.runtime"
+          {
+            printf 'SHOP_HTTP_PORT=%s\n' '3102'
+            printf 'DB_URL=%s\n' "$DB_URL"
+            printf 'DB_USERNAME=%s\n' "$DB_USERNAME"
+            printf 'DB_PASSWORD=%s\n' "$DB_PASSWORD"
+            printf 'JWT_SECRET=%s\n' "$JWT_SECRET"
+            printf 'CORS_ALLOWED_ORIGINS=%s\n' "$CORS_ALLOWED_ORIGINS"
+            printf 'BOLD_SECRET_KEY=%s\n' "$BOLD_SECRET_KEY"
+            printf 'BOLD_CURRENCY=%s\n' "${BOLD_CURRENCY:-COP}"
+            printf 'MIPAQUETE_BASE_URL=%s\n' "$MIPAQUETE_BASE_URL"
+            printf 'MIPAQUETE_API_KEY=%s\n' "$MIPAQUETE_API_KEY"
+            printf 'MIPAQUETE_SESSION_TRACKER=%s\n' "$MIPAQUETE_SESSION_TRACKER"
+            printf 'MIPAQUETE_ORIGIN_COUNTRY_CODE=%s\n' "${MIPAQUETE_ORIGIN_COUNTRY_CODE:-170}"
+            printf 'MIPAQUETE_ORIGIN_DANE_CODE=%s\n' "$MIPAQUETE_ORIGIN_DANE_CODE"
+            printf 'MIPAQUETE_SENDER_NAME=%s\n' "${MIPAQUETE_SENDER_NAME:-Sierra Dorada}"
+            printf 'MIPAQUETE_SENDER_EMAIL=%s\n' "$MIPAQUETE_SENDER_EMAIL"
+            printf 'MIPAQUETE_SENDER_PHONE=%s\n' "$MIPAQUETE_SENDER_PHONE"
+            printf 'MIPAQUETE_SENDER_DOCUMENT_TYPE=%s\n' "${MIPAQUETE_SENDER_DOCUMENT_TYPE:-NIT}"
+            printf 'MIPAQUETE_SENDER_DOCUMENT=%s\n' "$MIPAQUETE_SENDER_DOCUMENT"
+            printf 'MIPAQUETE_SENDER_ADDRESS=%s\n' "$MIPAQUETE_SENDER_ADDRESS"
+            printf 'MIPAQUETE_USER_ID=%s\n' "$MIPAQUETE_USER_ID"
+            printf 'MIPAQUETE_REQUEST_PICKUP=%s\n' "${MIPAQUETE_REQUEST_PICKUP:-false}"
+            printf 'MIPAQUETE_FORBIDDEN_PRODUCT=%s\n' 'false'
+            printf 'MIPAQUETE_WEBHOOK_SECRET=%s\n' "$MIPAQUETE_WEBHOOK_SECRET"
+            printf 'PI_MYSQL_DATABASE=%s\n' 'ecommerce_sd'
+            printf 'PI_MYSQL_USERNAME=%s\n' 'ecommerce'
+            printf 'PI_MYSQL_PASSWORD=%s\n' "$PI_MYSQL_PASSWORD"
+            printf 'PI_MYSQL_ROOT_PASSWORD=%s\n' "$PI_MYSQL_ROOT_PASSWORD"
+          } > "$archivo"
+
+      - name: Construir y desplegar contenedores
+        shell: bash
+        run: |
+          cd /home/sdpi/e-commerce-sd-fullstack
+          docker compose \
+            --env-file deploy/raspberry/.env.runtime \
+            -f deploy/raspberry/compose.yaml \
+            up -d --build --remove-orphans
+
+      - name: Verificar tienda y API
+        shell: bash
+        run: |
+          for intento in $(seq 1 30); do
+            if curl --fail --silent http://127.0.0.1:3102/healthz >/dev/null \
+              && curl --fail --silent http://127.0.0.1:3102/api/productos >/dev/null; then
+              docker compose \
+                --env-file /home/sdpi/e-commerce-sd-fullstack/deploy/raspberry/.env.runtime \
+                -f /home/sdpi/e-commerce-sd-fullstack/deploy/raspberry/compose.yaml \
+                ps
+              exit 0
+            fi
+            sleep 10
+          done
+
+          docker compose \
+            --env-file /home/sdpi/e-commerce-sd-fullstack/deploy/raspberry/.env.runtime \
+            -f /home/sdpi/e-commerce-sd-fullstack/deploy/raspberry/compose.yaml \
+            logs --tail=120
+          exit 1
