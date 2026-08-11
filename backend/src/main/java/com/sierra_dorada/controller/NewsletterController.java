@@ -4,6 +4,7 @@ import com.sierra_dorada.exception.ConflictoException;
 import com.sierra_dorada.model.SuscripcionNewsletter;
 import com.sierra_dorada.repository.SuscripcionNewsletterRepository;
 import com.sierra_dorada.repository.UsuarioRepository;
+import io.swagger.v3.oas.annotations.security.SecurityRequirements;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -30,6 +31,7 @@ public class NewsletterController {
     }
 
     @PostMapping
+    @SecurityRequirements
     public ResponseEntity<SuscripcionNewsletter> registrar(
         @Valid @RequestBody SuscripcionNewsletter suscripcion,
         Authentication autenticacion) {

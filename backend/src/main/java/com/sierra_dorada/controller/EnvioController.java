@@ -2,10 +2,13 @@ package com.sierra_dorada.controller;
 
 import com.sierra_dorada.dto.CotizacionEnvioRequest;
 import com.sierra_dorada.dto.UbicacionResponse;
+import com.sierra_dorada.config.OpenApiConfig;
 import com.sierra_dorada.model.Envio;
 import com.sierra_dorada.model.Pedido;
 import com.sierra_dorada.service.EnvioService;
 import com.sierra_dorada.service.PedidoService;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import io.swagger.v3.oas.annotations.security.SecurityRequirements;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -34,6 +37,7 @@ public class EnvioController {
     }
 
     @GetMapping("/ubicaciones")
+    @SecurityRequirements
     public List<UbicacionResponse> ubicaciones(
         @RequestParam(required = false) String q,
         @RequestParam(required = false) String codigo) {
@@ -41,6 +45,7 @@ public class EnvioController {
     }
 
     @PostMapping("/cotizaciones")
+    @SecurityRequirements
     public List<Map<String, Object>> cotizar(
         @Valid @RequestBody CotizacionEnvioRequest solicitud) {
         return envios.cotizar(solicitud);
@@ -61,6 +66,7 @@ public class EnvioController {
     }
 
     @PostMapping("/webhook/estados")
+    @SecurityRequirement(name = OpenApiConfig.ESQUEMA_WEBHOOK_MIPAQUETE)
     public ResponseEntity<Void> webhook(
         @RequestHeader("X-Webhook-Secret") String secreto,
         @RequestBody Map<String, Object> payload) {

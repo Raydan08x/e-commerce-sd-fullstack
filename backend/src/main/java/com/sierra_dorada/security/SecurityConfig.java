@@ -5,6 +5,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -35,6 +36,11 @@ public class SecurityConfig {
         "/api/categorias/**",
         "/api/metodos-pago/**"
     };
+    private static final String[] RUTAS_DOCUMENTACION = {
+        "/swagger-ui.html",
+        "/swagger-ui/**",
+        "/v3/api-docs/**"
+    };
 
     @Bean
     PasswordEncoder codificadorContrasenas() {
@@ -58,6 +64,27 @@ public class SecurityConfig {
     }
 
     @Bean
+    @Order(1)
+    SecurityFilterChain cadenaDocumentacion(HttpSecurity http) throws Exception {
+        return http
+            .securityMatcher(RUTAS_DOCUMENTACION)
+            .csrf(csrf -> csrf.disable())
+            .cors(cors -> cors.disable())
+            .requestCache(cache -> cache.disable())
+            .sessionManagement(sesiones ->
+                sesiones.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+            .authorizeHttpRequests(autorizacion ->
+                autorizacion.anyRequest().hasRole(ROL_ADMIN))
+            .httpBasic(basic -> basic.realmName("Sierra Dorada API Docs"))
+            .exceptionHandling(excepciones -> excepciones
+                .accessDeniedHandler((solicitud, respuesta, excepcion) ->
+                    escribirError(respuesta, HttpServletResponse.SC_FORBIDDEN,
+                        "No tienes permisos para consultar la documentación")))
+            .build();
+    }
+
+    @Bean
+    @Order(2)
     SecurityFilterChain cadenaFiltrosSeguridad(HttpSecurity http,
                                                 JwtAuthenticationFilter filtroJwt) throws Exception {
         return http

@@ -22,6 +22,7 @@ Flyway se ejecuta al iniciar la aplicación. En instalaciones antiguas usa basel
 | `DB_URL` | JDBC de MySQL/RDS, por ejemplo `jdbc:mysql://host:3306/e-commerce-sierra-dorada` |
 | `DB_USERNAME` / `DB_PASSWORD` | Credenciales de la aplicación |
 | `JWT_SECRET` | Secreto JWT de al menos 32 bytes |
+| `ADMIN_EMAIL` | Correo verificado del administrador principal (por defecto `sierradoradacb@gmail.com`) |
 | `CORS_ALLOWED_ORIGINS` | Orígenes frontend separados por coma |
 | `BOLD_SECRET_KEY` | Firma segura de pagos Bold |
 | `BOLD_IDENTITY_KEY` | Llave de identidad del botón; permite confirmar el estado al regresar de Bold |
@@ -63,6 +64,21 @@ No se incluyen contraseñas ni API keys reales en el repositorio.
 ```
 
 Por defecto la API queda en `http://localhost:8080/api`.
+
+## Swagger/OpenAPI protegido
+
+La interfaz está en `http://localhost:8080/swagger-ui.html` y el contrato JSON
+en `http://localhost:8080/v3/api-docs`. Ambos recursos solicitan autenticación
+HTTP Basic antes de entregar contenido y consultan las credenciales en la misma
+tabla `usuarios`; solo una cuenta activa, verificada y con rol `ADMIN` puede
+acceder. En producción deben abrirse exclusivamente mediante HTTPS.
+
+La cuenta configurada por `ADMIN_EMAIL` recibe `ADMIN` únicamente después de
+verificar el correo. No se crea una contraseña predeterminada ni se guarda una
+credencial en el repositorio. Dentro de Swagger, el botón **Authorize** acepta el
+JWT obtenido mediante `POST /api/auth/login`. La autorización no se conserva en
+el almacenamiento del navegador. Para desactivar por completo la documentación,
+configure `SPRINGDOC_ENABLED=false`.
 
 ## Contratos principales
 
