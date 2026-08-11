@@ -38,6 +38,8 @@ public class EnvioService {
     private static final int UNIDADES_POR_CAJA = 24;
     private static final int MAXIMO_UNIDADES_POR_PEDIDO = 240;
     private static final BigDecimal PESO_CAJA_24_KG = new BigDecimal("16.6");
+    private static final String TRANSPORTADORA_SIMULADA_ID = "MIPAQUETE_PRUEBA";
+    private static final String TRANSPORTADORA_SIMULADA_NOMBRE = "MiPaquete (cotización de prueba)";
     private final MiPaqueteClient cliente;
     private final MiPaqueteProperties propiedades;
     private final ProductoRepository productos;
@@ -115,6 +117,9 @@ public class EnvioService {
 
     public List<Map<String, Object>> cotizar(CotizacionEnvioRequest solicitud) {
         Paquete paquete = calcularPaquete(solicitud.detalles());
+        if (!propiedades.isCreateShipmentEnabled()) {
+            return cotizacionSimulada(paquete);
+        }
         Map<String, Object> cuerpo = new LinkedHashMap<>();
         cuerpo.put("originCountryCode", propiedades.getOriginCountryCode());
         cuerpo.put("originLocationCode", propiedades.getOriginDaneCode());
@@ -130,6 +135,15 @@ public class EnvioService {
     }
 
     public OpcionEnvio seleccionar(CotizacionEnvioRequest solicitud, String transportadoraId) {
+        if (!propiedades.isCreateShipmentEnabled()
+                && TRANSPORTADORA_SIMULADA_ID.equals(transportadoraId)) {
+            Map<String, Object> opcion = cotizacionSimulada(
+                calcularPaquete(solicitud.detalles())).getFirst();
+            return new OpcionEnvio(
+                transportadoraId,
+                TRANSPORTADORA_SIMULADA_NOMBRE,
+                decimal(opcion.get("shippingCost")));
+        }
         return cotizar(solicitud).stream()
             .filter(opcion -> transportadoraId.equals(String.valueOf(opcion.get("deliveryCompanyId"))))
             .findFirst()
@@ -139,6 +153,22 @@ public class EnvioService {
                 decimal(opcion.get("shippingCost"))))
             .orElseThrow(() -> new IllegalArgumentException(
                 "La transportadora seleccionada no está disponible para este destino"));
+    }
+
+    private List<Map<String, Object>> cotizacionSimulada(Paquete paquete) {
+        int pesoTotal = paquete.pesoPorBulto() * paquete.cantidadBultos();
+        int costoCalculado = 12000 + pesoTotal * 800
+            + Math.max(0, paquete.cantidadBultos() - 1) * 3000;
+        int costoRedondeado = ((costoCalculado + 999) / 1000) * 1000;
+        Map<String, Object> opcion = new LinkedHashMap<>();
+        opcion.put("id", "COTIZACION-SIMULADA");
+        opcion.put("deliveryCompanyId", TRANSPORTADORA_SIMULADA_ID);
+        opcion.put("deliveryCompanyName", TRANSPORTADORA_SIMULADA_NOMBRE);
+        opcion.put("shippingCost", costoRedondeado);
+        opcion.put("shippingTime", 2880);
+        opcion.put("realWeightVolume", pesoTotal);
+        opcion.put("simulated", true);
+        return List.of(opcion);
     }
 
     public Envio preparar(Pedido pedido, CrearPedidoRequest solicitud, OpcionEnvio opcion) {

@@ -1,5 +1,6 @@
 package com.sierra_dorada.service;
 
+import com.sierra_dorada.dto.PerfilUsuarioResponse;
 import com.sierra_dorada.dto.UsuarioActualizacionRequest;
 import com.sierra_dorada.exception.ConflictoException;
 import com.sierra_dorada.exception.RecursoNoEncontradoException;
@@ -31,6 +32,14 @@ public class UsuarioService {
     public Usuario obtener(Integer id) {
         return usuarios.findById(id)
                 .orElseThrow(() -> new RecursoNoEncontradoException("Usuario no encontrado"));
+    }
+
+    public PerfilUsuarioResponse obtenerPerfil(String email) {
+        Usuario usuario = usuarios.findByEmailIgnoreCase(normalizarCorreo(email))
+            .orElseThrow(() -> new RecursoNoEncontradoException("Usuario no encontrado"));
+        return new PerfilUsuarioResponse(
+            usuario.getId(), usuario.getNombres(), usuario.getApellidos(),
+            usuario.getEmail(), usuario.getTelefono(), usuario.getDireccion());
     }
 
     public Usuario crear(Usuario usuario) {

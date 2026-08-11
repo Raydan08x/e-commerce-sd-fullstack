@@ -2,8 +2,8 @@ import {
     actualizarCantidad,
     eliminarProducto,
     obtenerCarrito
-} from "./carritoStorage.js?v=20260811-1";
-import { enviosApi, obtenerSesion, pedidosApi } from "./api.js?v=20260811-1";
+} from "./carritoStorage.js?v=20260811-3";
+import { enviosApi, obtenerSesion, pedidosApi, perfilApi } from "./api.js?v=20260811-3";
 
 const contenedor = document.getElementById("contenedorCarrito");
 const subtotalEl = document.getElementById("subtotalCarrito");
@@ -32,6 +32,15 @@ const resumenTransportadora = document.getElementById("resumenTransportadora");
 const resultadoPago = document.getElementById("resultadoPago");
 const contenidoCarrito = document.getElementById("contenidoCarrito");
 const encabezadoCarrito = document.querySelector(".catalogo-header");
+const CLAVE_BORRADOR_ENVIO = "checkoutEnvioSierraDorada";
+const camposEnvio = {
+    destinatarioNombre: document.getElementById("destinatarioNombre"),
+    destinatarioApellido: document.getElementById("destinatarioApellido"),
+    destinatarioEmail: document.getElementById("destinatarioEmail"),
+    destinatarioTelefono: document.getElementById("destinatarioTelefono"),
+    direccionEnvio: document.getElementById("direccionEnvio"),
+    notasPedido: document.getElementById("notasPedido")
+};
 
 let cotizacionSeleccionada = null;
 let pasoCheckout = 1;
@@ -90,6 +99,55 @@ function nombreUbicacion(ubicacion) {
     return departamento ? `${nombre}, ${departamento}` : nombre;
 }
 
+function leerBorradorEnvio() {
+    try {
+        return JSON.parse(sessionStorage.getItem(CLAVE_BORRADOR_ENVIO)) || {};
+    } catch {
+        sessionStorage.removeItem(CLAVE_BORRADOR_ENVIO);
+        return {};
+    }
+}
+
+function guardarBorradorEnvio() {
+    const borrador = Object.fromEntries(
+        Object.entries(camposEnvio).map(([clave, campo]) => [clave, campo.value])
+    );
+    borrador.municipio = municipioActual;
+    sessionStorage.setItem(CLAVE_BORRADOR_ENVIO, JSON.stringify(borrador));
+}
+
+function completarSiVacio(campo, valor) {
+    if (!campo.value.trim() && valor) campo.value = String(valor).trim();
+}
+
+function restaurarBorradorEnvio() {
+    const borrador = leerBorradorEnvio();
+    Object.entries(camposEnvio).forEach(([clave, campo]) => {
+        if (borrador[clave] != null) campo.value = borrador[clave];
+    });
+    if (borrador.municipio?.codigo) seleccionarMunicipio(borrador.municipio);
+}
+
+async function cargarPerfilUsuario() {
+    const sesion = obtenerSesion();
+    if (!sesion) return;
+    const partes = String(sesion.nombreCompleto || "").trim().split(/\s+/);
+    completarSiVacio(camposEnvio.destinatarioNombre, partes.shift());
+    completarSiVacio(camposEnvio.destinatarioApellido, partes.join(" "));
+    completarSiVacio(camposEnvio.destinatarioEmail, sesion.email);
+    try {
+        const perfil = await perfilApi.obtener();
+        completarSiVacio(camposEnvio.destinatarioNombre, perfil.nombres);
+        completarSiVacio(camposEnvio.destinatarioApellido, perfil.apellidos);
+        completarSiVacio(camposEnvio.destinatarioEmail, perfil.email);
+        completarSiVacio(camposEnvio.destinatarioTelefono, perfil.telefono);
+        completarSiVacio(camposEnvio.direccionEnvio, perfil.direccion);
+        guardarBorradorEnvio();
+    } catch (error) {
+        mensajeEnvio.textContent = `No pudimos cargar tu perfil: ${error.message}`;
+    }
+}
+
 function escaparHtml(valor) {
     return String(valor ?? "").replace(/[&<>'"]/g, caracter => ({
         "&": "&amp;", "<": "&lt;", ">": "&gt;", "'": "&#39;", '"': "&quot;"
@@ -110,6 +168,7 @@ function seleccionarMunicipio(ubicacion) {
     municipioSeleccionado.classList.add("is-valid");
     ocultarResultadosMunicipio();
     invalidarPedido();
+    guardarBorradorEnvio();
     requestAnimationFrame(ajustarAltoCheckout);
 }
 
@@ -240,13 +299,10 @@ function mostrarCarrito() {
     actualizarTotales();
 }
 
-const sesion = obtenerSesion();
-if (sesion) {
-    const partes = String(sesion.nombreCompleto || "").trim().split(/\s+/);
-    document.getElementById("destinatarioNombre").value = partes.shift() || "";
-    document.getElementById("destinatarioApellido").value = partes.join(" ");
-    document.getElementById("destinatarioEmail").value = sesion.email || "";
-}
+restaurarBorradorEnvio();
+cargarPerfilUsuario();
+formEnvio.addEventListener("input", guardarBorradorEnvio);
+formEnvio.addEventListener("change", guardarBorradorEnvio);
 
 municipioBusqueda.addEventListener("input", () => {
     window.clearTimeout(temporizadorMunicipio);
@@ -310,6 +366,7 @@ botonCotizar.addEventListener("click", async () => {
                 <span><strong>${opcion.deliveryCompanyName}</strong><br>
                   ${moneda(opcion.shippingCost)} · aprox.
                   ${Math.ceil(Number(opcion.shippingTime || 0) / 1440)} día(s)
+                  ${opcion.simulated ? '<small>Modo prueba: no genera una guía real.</small>' : ""}
                 </span>
               </label>`).join("");
 
@@ -318,7 +375,10 @@ botonCotizar.addEventListener("click", async () => {
                 cotizacionSeleccionada = ordenadas[Number(input.dataset.indice)];
                 delete botonPagar.dataset.pedidoId;
                 actualizarTotales();
-                mensajeEnvio.textContent = "Transportadora seleccionada.";
+                guardarBorradorEnvio();
+                mensajeEnvio.textContent = cotizacionSeleccionada.simulated
+                    ? "Cotización de prueba seleccionada. No se generará un envío real."
+                    : "Transportadora seleccionada.";
                 requestAnimationFrame(ajustarAltoCheckout);
             });
         });
@@ -417,6 +477,7 @@ function mostrarResultadoPago(resultado) {
         </div>`;
     resultadoPago.hidden = false;
     if (confirmado) {
+        sessionStorage.removeItem(CLAVE_BORRADOR_ENVIO);
         encabezadoCarrito.hidden = true;
         contenidoCarrito.hidden = true;
     }
@@ -436,6 +497,7 @@ botonPagar.addEventListener("click", async event => {
     event.stopImmediatePropagation();
 
     if (!obtenerSesion()) {
+        guardarBorradorEnvio();
         sessionStorage.setItem("volverDespuesLogin", "carrito.html");
         window.location.href = "login.html";
         return;

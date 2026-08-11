@@ -1,6 +1,7 @@
 package com.sierra_dorada;
 
 import com.jayway.jsonpath.JsonPath;
+import com.sierra_dorada.config.MiPaqueteProperties;
 import com.sierra_dorada.model.Rol;
 import com.sierra_dorada.model.Producto;
 import com.sierra_dorada.model.Usuario;
@@ -27,6 +28,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.mockito.Mockito.clearInvocations;
 import static org.mockito.Mockito.anyMap;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -54,6 +56,9 @@ class AuthIntegrationTests {
 
     @Autowired
     private PasswordEncoder codificadorContrasenas;
+
+    @Autowired
+    private MiPaqueteProperties propiedadesMiPaquete;
 
     @MockitoBean
     private JavaMailSender correo;
@@ -102,10 +107,15 @@ class AuthIntegrationTests {
         when(miPaquete.cotizar(anyMap())).thenReturn(List.of());
         clearInvocations(miPaquete);
 
-        cotizar(unidad.getId(), 3);
-        cotizar(pack.getId(), 3);
-        cotizar(caja.getId(), 2);
-        cotizar(hoodie.getId(), 1);
+        propiedadesMiPaquete.setCreateShipmentEnabled(true);
+        try {
+            cotizar(unidad.getId(), 3);
+            cotizar(pack.getId(), 3);
+            cotizar(caja.getId(), 2);
+            cotizar(hoodie.getId(), 1);
+        } finally {
+            propiedadesMiPaquete.setCreateShipmentEnabled(false);
+        }
 
         @SuppressWarnings("unchecked")
         ArgumentCaptor<Map<String, Object>> captor = ArgumentCaptor.forClass(Map.class);
@@ -116,6 +126,50 @@ class AuthIntegrationTests {
         assertPaquete(solicitudes.get(1), 1, 18, 51, 25, 9);
         assertPaquete(solicitudes.get(2), 2, 29, 42, 27, 18);
         assertPaquete(solicitudes.get(3), 1, 32, 38, 14, 2);
+    }
+
+    @Test
+    void cotizaSinContactarMiPaqueteCuandoLosEnviosRealesEstanDesactivados() throws Exception {
+        Producto producto = productoEnvio("QA-SIM", 20_000, 1);
+        propiedadesMiPaquete.setCreateShipmentEnabled(false);
+        clearInvocations(miPaquete);
+
+        mvc.perform(post("/api/envios/cotizaciones")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("""
+                    {"destinoCodigo":"25899000","detalles":[{"productoId":%d,"cantidad":1}]}
+                    """.formatted(producto.getId())))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$[0].deliveryCompanyId").value("MIPAQUETE_PRUEBA"))
+            .andExpect(jsonPath("$[0].simulated").value(true))
+            .andExpect(jsonPath("$[0].shippingCost").isNumber());
+
+        verify(miPaquete, never()).cotizar(anyMap());
+    }
+
+    @Test
+    void entregaElPerfilSoloAlUsuarioAutenticado() throws Exception {
+        Usuario usuario = new Usuario();
+        usuario.setNombres("Carlos");
+        usuario.setApellidos("Madero Perea");
+        usuario.setEmail("perfil.checkout@example.com");
+        usuario.setTelefono("3017819446");
+        usuario.setDireccion("Diagonal 4 #28A-14");
+        usuario.setContrasena(codificadorContrasenas.encode("secreto123"));
+        usuario.setActivo(true);
+        usuario.setEmailVerificado(true);
+        usuarios.save(usuario);
+        String token = servicioJwt.generar(usuario);
+
+        mvc.perform(get("/api/perfil")
+                .header("Authorization", "Bearer " + token))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.nombres").value("Carlos"))
+            .andExpect(jsonPath("$.apellidos").value("Madero Perea"))
+            .andExpect(jsonPath("$.telefono").value("3017819446"))
+            .andExpect(jsonPath("$.direccion").value("Diagonal 4 #28A-14"));
+
+        mvc.perform(get("/api/perfil")).andExpect(status().isUnauthorized());
     }
 
     @Test
