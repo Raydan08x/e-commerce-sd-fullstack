@@ -6,6 +6,8 @@ import io.swagger.v3.oas.models.info.Contact;
 import io.swagger.v3.oas.models.info.Info;
 import io.swagger.v3.oas.models.security.SecurityRequirement;
 import io.swagger.v3.oas.models.security.SecurityScheme;
+import io.swagger.v3.oas.models.servers.Server;
+import java.util.List;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -18,6 +20,11 @@ public class OpenApiConfig {
     @Bean
     OpenAPI apiSierraDorada() {
         return new OpenAPI()
+            // Una URL relativa conserva el esquema HTTPS usado por el navegador y
+            // evita contenido mixto cuando la aplicacion esta detras de Cloudflare.
+            .servers(List.of(new Server()
+                .url("/")
+                .description("Servidor actual")))
             .info(new Info()
                 .title("Sierra Dorada API")
                 .version("1.0")
