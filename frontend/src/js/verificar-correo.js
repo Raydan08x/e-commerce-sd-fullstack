@@ -1,4 +1,4 @@
-import { authApi, guardarSesion } from "./api.js?v=20260811-1";
+import { authApi, guardarSesion } from "./api.js?v=20260811-2";
 
 const parametros = new URLSearchParams(window.location.search);
 const token = parametros.get("token");
