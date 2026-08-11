@@ -16,6 +16,7 @@ import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -85,6 +86,14 @@ public class PedidoService {
             });
         }
         pedido.setEstado(estado);
+        LocalDateTime ahora = LocalDateTime.now();
+        if ("Confirmado".equals(estado) && pedido.getFechaConfirmacion() == null) {
+            pedido.setFechaConfirmacion(ahora);
+        } else if ("Enviado".equals(estado) && pedido.getFechaEnvio() == null) {
+            pedido.setFechaEnvio(ahora);
+        } else if ("Entregado".equals(estado) && pedido.getFechaEntrega() == null) {
+            pedido.setFechaEntrega(ahora);
+        }
         return pedidos.save(pedido);
     }
 

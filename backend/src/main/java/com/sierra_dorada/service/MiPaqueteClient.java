@@ -4,6 +4,7 @@ import com.sierra_dorada.config.MiPaqueteProperties;
 import com.sierra_dorada.exception.IntegracionExternaException;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.MediaType;
+import org.springframework.http.client.SimpleClientHttpRequestFactory;
 import org.springframework.stereotype.Component;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.util.StringUtils;
@@ -13,6 +14,7 @@ import org.springframework.web.client.RestClientResponseException;
 
 import java.util.List;
 import java.util.Map;
+import java.time.Duration;
 
 @Component
 public class MiPaqueteClient {
@@ -24,7 +26,13 @@ public class MiPaqueteClient {
 
     public MiPaqueteClient(MiPaqueteProperties propiedades) {
         this.propiedades = propiedades;
-        this.cliente = RestClient.create(propiedades.getBaseUrl());
+        SimpleClientHttpRequestFactory transporte = new SimpleClientHttpRequestFactory();
+        transporte.setConnectTimeout(Duration.ofSeconds(10));
+        transporte.setReadTimeout(Duration.ofSeconds(30));
+        this.cliente = RestClient.builder()
+            .baseUrl(propiedades.getBaseUrl())
+            .requestFactory(transporte)
+            .build();
     }
 
     @Cacheable("ubicacionesMiPaquete")

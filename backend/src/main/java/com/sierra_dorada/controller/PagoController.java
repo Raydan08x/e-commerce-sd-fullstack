@@ -2,6 +2,7 @@ package com.sierra_dorada.controller;
 
 import com.sierra_dorada.dto.FirmaBoldRequest;
 import com.sierra_dorada.dto.FirmaBoldResponse;
+import com.sierra_dorada.dto.ResultadoPagoBoldResponse;
 import com.sierra_dorada.model.Pago;
 import com.sierra_dorada.repository.PagoRepository;
 import com.sierra_dorada.service.PagoService;
@@ -13,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestHeader;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -47,6 +49,13 @@ public class PagoController {
         @RequestBody byte[] cuerpo) {
         servicio.procesarWebhook(firma, cuerpo);
         return ResponseEntity.ok().build();
+    }
+
+    @PostMapping("/bold/ordenes/{referencia}/confirmacion")
+    public ResultadoPagoBoldResponse confirmarRetorno(
+            @PathVariable String referencia, Authentication autenticacion) {
+        return servicio.confirmarRetorno(
+            referencia, autenticacion.getName(), esAdmin(autenticacion));
     }
 
     private boolean esAdmin(Authentication autenticacion) {

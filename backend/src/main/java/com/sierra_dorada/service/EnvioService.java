@@ -21,6 +21,7 @@ import org.springframework.util.StringUtils;
 import tools.jackson.databind.ObjectMapper;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.text.Normalizer;
@@ -34,6 +35,9 @@ import java.util.stream.Collectors;
 
 @Service
 public class EnvioService {
+    private static final int UNIDADES_POR_CAJA = 24;
+    private static final int MAXIMO_UNIDADES_POR_PEDIDO = 240;
+    private static final BigDecimal PESO_CAJA_24_KG = new BigDecimal("16.6");
     private final MiPaqueteClient cliente;
     private final MiPaqueteProperties propiedades;
     private final ProductoRepository productos;
@@ -116,11 +120,11 @@ public class EnvioService {
         cuerpo.put("originLocationCode", propiedades.getOriginDaneCode());
         cuerpo.put("destinyCountryCode", "170");
         cuerpo.put("destinyLocationCode", solicitud.destinoCodigo());
-        cuerpo.put("quantity", paquete.cantidad());
-        cuerpo.put("width", 20);
-        cuerpo.put("length", 20);
-        cuerpo.put("height", 15);
-        cuerpo.put("weight", paquete.peso());
+        cuerpo.put("quantity", paquete.cantidadBultos());
+        cuerpo.put("width", paquete.ancho());
+        cuerpo.put("length", paquete.largo());
+        cuerpo.put("height", paquete.alto());
+        cuerpo.put("weight", paquete.pesoPorBulto());
         cuerpo.put("declaredValue", paquete.valorDeclarado());
         return cliente.cotizar(cuerpo);
     }
@@ -150,11 +154,22 @@ public class EnvioService {
         envio.setTransportadoraId(opcion.id());
         envio.setTransportadoraNombre(opcion.nombre());
         envio.setCosto(opcion.costo());
+        if (!propiedades.isCreateShipmentEnabled()) {
+            envio.setEstado("PENDIENTE_ACTIVACION");
+        }
         return envio;
+    }
+
+    public boolean generacionGuiasHabilitada() {
+        return propiedades.isCreateShipmentEnabled();
     }
 
     @Transactional
     public Envio generarGuia(Pedido pedido) {
+        if (!propiedades.isCreateShipmentEnabled()) {
+            throw new ConflictoException(
+                "La creación de envíos Mi Paquete está desactivada en este ambiente");
+        }
         validarConfiguracionRemitente();
         Envio envio = envios.findByPedidoId(pedido.getId())
             .orElseThrow(() -> new RecursoNoEncontradoException("Envío no encontrado"));
@@ -168,8 +183,22 @@ public class EnvioService {
             throw new IllegalStateException("Mi Paquete no devolvió el código del envío");
         }
         envio.setCodigoMiPaquete(Long.valueOf(String.valueOf(codigo)));
+        envio.setNumeroGuia(textoPrimero(respuesta,
+            "guideNumber", "guide", "trackingNumber", "numeroGuia"));
+        envio.setUrlGuia(textoPrimero(respuesta,
+            "guideUrl", "urlGuide", "url", "urlGuia"));
         envio.setEstado("GENERADO");
         return envios.save(envio);
+    }
+
+    private String textoPrimero(Map<String, Object> respuesta, String... llaves) {
+        for (String llave : llaves) {
+            Object dato = respuesta.get(llave);
+            if (dato != null && StringUtils.hasText(String.valueOf(dato))) {
+                return String.valueOf(dato);
+            }
+        }
+        return null;
     }
 
     public Map<String, Object> tracking(Envio envio) {
@@ -206,7 +235,7 @@ public class EnvioService {
     }
 
     private Map<String, Object> cuerpoCreacion(Pedido pedido, Envio envio) {
-        int cantidad = pedido.getDetalles().stream().mapToInt(d -> d.getCantidad()).sum();
+        Paquete paquete = calcularPaquete(pedido);
         String descripcion = pedido.getDetalles().stream()
             .map(d -> d.getProducto().getNombre() + " x" + d.getCantidad())
             .reduce((a, b) -> a + ", " + b).orElse("Pedido Sierra Dorada");
@@ -227,12 +256,12 @@ public class EnvioService {
         cuerpo.put("productInformation", Map.of(
             "declaredValue", pedido.getSubtotal(),
             "forbiddenProduct", propiedades.isForbiddenProduct(),
-            "height", 15,
-            "large", 20,
+            "height", paquete.alto(),
+            "large", paquete.largo(),
             "productReference", "PEDIDO-" + pedido.getId(),
-            "quantity", cantidad,
-            "weight", Math.max(1, cantidad),
-            "width", 20));
+            "quantity", paquete.cantidadBultos(),
+            "weight", paquete.pesoPorBulto(),
+            "width", paquete.ancho()));
         cuerpo.put("receiver", Map.of(
             "cellPhone", limpiarTelefono(envio.getDestinatarioTelefono()),
             "destinationAddress", envio.getDireccionDestino(),
@@ -258,17 +287,142 @@ public class EnvioService {
 
     private Paquete calcularPaquete(List<DetallePedidoRequest> detalles) {
         BigDecimal valor = BigDecimal.ZERO;
-        int cantidad = 0;
+        Carga carga = new Carga();
         for (DetallePedidoRequest detalle : detalles) {
             Producto producto = productos.findById(detalle.productoId())
                 .orElseThrow(() -> new RecursoNoEncontradoException("Producto no encontrado"));
             if (!Boolean.TRUE.equals(producto.getActivo()) || producto.getStock() < detalle.cantidad()) {
                 throw new IllegalArgumentException("Producto inactivo o sin stock: " + producto.getNombre());
             }
-            cantidad += detalle.cantidad();
+            agregarProducto(carga, producto, detalle.cantidad());
             valor = valor.add(producto.getPrecio().multiply(BigDecimal.valueOf(detalle.cantidad())));
         }
-        return new Paquete(cantidad, Math.max(1, cantidad), valor);
+        return especificacionPaquete(carga, valor);
+    }
+
+    private Paquete calcularPaquete(Pedido pedido) {
+        Carga carga = new Carga();
+        for (var detalle : pedido.getDetalles()) {
+            agregarProducto(carga, detalle.getProducto(), detalle.getCantidad());
+        }
+        return especificacionPaquete(carga, pedido.getSubtotal());
+    }
+
+    private void agregarProducto(Carga carga, Producto producto, int cantidad) {
+        try {
+            if (tieneEmpaquePersonalizado(producto)) {
+                validarEmpaquePersonalizado(producto);
+                carga.pesoPersonalizado = carga.pesoPersonalizado.add(
+                    producto.getPesoEnvioKg().multiply(BigDecimal.valueOf(cantidad)));
+                long volumenUnidad = Math.multiplyExact(
+                    Math.multiplyExact((long) producto.getAnchoEnvioCm(), producto.getLargoEnvioCm()),
+                    producto.getAltoEnvioCm());
+                carga.volumenPersonalizado = Math.addExact(carga.volumenPersonalizado,
+                    Math.multiplyExact(volumenUnidad, cantidad));
+                carga.anchoPersonalizado = Math.max(carga.anchoPersonalizado,
+                    producto.getAnchoEnvioCm());
+                carga.largoPersonalizado = Math.max(carga.largoPersonalizado,
+                    producto.getLargoEnvioCm());
+                carga.altoPersonalizado = Math.max(carga.altoPersonalizado,
+                    producto.getAltoEnvioCm());
+            } else {
+                int unidadesDetalle = Math.multiplyExact(
+                    producto.getUnidadesPorProducto(), cantidad);
+                carga.unidadesBebida = Math.addExact(carga.unidadesBebida, unidadesDetalle);
+            }
+        } catch (ArithmeticException excepcion) {
+            throw new IllegalArgumentException("La cantidad solicitada es demasiado grande");
+        }
+    }
+
+    private boolean tieneEmpaquePersonalizado(Producto producto) {
+        return producto.getPesoEnvioKg() != null
+            || producto.getAnchoEnvioCm() != null
+            || producto.getLargoEnvioCm() != null
+            || producto.getAltoEnvioCm() != null;
+    }
+
+    private void validarEmpaquePersonalizado(Producto producto) {
+        if (producto.getPesoEnvioKg() == null || producto.getAnchoEnvioCm() == null
+            || producto.getLargoEnvioCm() == null || producto.getAltoEnvioCm() == null) {
+            throw new IllegalArgumentException(
+                "Completa peso, ancho, largo y alto de envío para: " + producto.getNombre());
+        }
+    }
+
+    private Paquete especificacionPaquete(Carga carga, BigDecimal valorDeclarado) {
+        if (carga.unidadesBebida < 1 && carga.volumenPersonalizado < 1) {
+            throw new IllegalArgumentException("El envío debe contener al menos una unidad física");
+        }
+        if (carga.unidadesBebida > MAXIMO_UNIDADES_POR_PEDIDO) {
+            throw new IllegalArgumentException(
+                "El pedido supera el máximo de 240 unidades físicas por envío");
+        }
+
+        int cantidadBultos = Math.max(1,
+            (carga.unidadesBebida + UNIDADES_POR_CAJA - 1) / UNIDADES_POR_CAJA);
+        long volumenPersonalizadoProtegido = (long) Math.ceil(carga.volumenPersonalizado * 1.10d);
+
+        while (cantidadBultos <= 10) {
+            int unidadesPorBulto = carga.unidadesBebida == 0 ? 0
+                : (carga.unidadesBebida + cantidadBultos - 1) / cantidadBultos;
+            Dimensiones base = unidadesPorBulto == 0
+                ? new Dimensiones(carga.anchoPersonalizado, carga.largoPersonalizado,
+                    carga.altoPersonalizado)
+                : dimensionesPara(unidadesPorBulto);
+            int ancho = Math.max(base.ancho(), carga.anchoPersonalizado);
+            int largo = Math.max(base.largo(), carga.largoPersonalizado);
+            long volumenBase = unidadesPorBulto == 0 ? 0L
+                : (long) base.ancho() * base.largo() * base.alto();
+            long volumenPorBulto = volumenBase
+                + dividirRedondeandoArriba(volumenPersonalizadoProtegido, cantidadBultos);
+            int altoPorVolumen = (int) dividirRedondeandoArriba(volumenPorBulto,
+                Math.max(1L, (long) ancho * largo));
+            int alto = Math.max(Math.max(base.alto(), carga.altoPersonalizado), altoPorVolumen);
+
+            BigDecimal pesoBebidas = unidadesPorBulto == 0 ? BigDecimal.ZERO
+                : PESO_CAJA_24_KG.multiply(BigDecimal.valueOf(unidadesPorBulto))
+                    .divide(BigDecimal.valueOf(UNIDADES_POR_CAJA), 6, RoundingMode.HALF_UP)
+                    .add(pesoProteccion(unidadesPorBulto));
+            BigDecimal pesoPersonalizadoPorBulto = carga.pesoPersonalizado
+                .divide(BigDecimal.valueOf(cantidadBultos), 6, RoundingMode.CEILING);
+            int peso = pesoBebidas.add(pesoPersonalizadoPorBulto)
+                .setScale(0, RoundingMode.CEILING).intValueExact();
+
+            if (alto <= 60 && peso <= 25) {
+                return new Paquete(cantidadBultos, ancho, largo, alto, peso, valorDeclarado);
+            }
+            cantidadBultos++;
+        }
+        throw new IllegalArgumentException(
+            "El pedido requiere más de 10 bultos; solicita una cotización mayorista");
+    }
+
+    private long dividirRedondeandoArriba(long dividendo, long divisor) {
+        return dividendo == 0 ? 0 : 1 + (dividendo - 1) / divisor;
+    }
+
+    private Dimensiones dimensionesPara(int unidades) {
+        if (unidades == 1) return new Dimensiones(10, 10, 25);
+        if (unidades == 2) return new Dimensiones(10, 18, 25);
+        if (unidades <= 4) return new Dimensiones(18, 18, 25);
+        if (unidades <= 8) return new Dimensiones(18, 35, 25);
+        if (unidades <= 12) return new Dimensiones(18, 51, 25);
+        if (unidades <= 16) return new Dimensiones(35, 35, 25);
+        if (unidades <= 23) return new Dimensiones(35, 51, 25);
+        return new Dimensiones(29, 42, 27);
+    }
+
+    private BigDecimal pesoProteccion(int unidades) {
+        if (unidades == 1) return new BigDecimal("0.20");
+        if (unidades == 2) return new BigDecimal("0.25");
+        if (unidades == 3) return new BigDecimal("0.30");
+        if (unidades == 4) return new BigDecimal("0.35");
+        if (unidades <= 8) return new BigDecimal("0.50");
+        if (unidades <= 12) return new BigDecimal("0.70");
+        if (unidades <= 16) return new BigDecimal("0.85");
+        if (unidades <= 23) return new BigDecimal("1.10");
+        return new BigDecimal("0.60");
     }
 
     private void validarSecretoWebhook(String recibido) {
@@ -304,6 +458,16 @@ public class EnvioService {
         return StringUtils.hasText(texto) ? texto : ".";
     }
 
-    private record Paquete(int cantidad, int peso, BigDecimal valorDeclarado) { }
+    private record Dimensiones(int ancho, int largo, int alto) { }
+    private record Paquete(int cantidadBultos, int ancho, int largo, int alto,
+                           int pesoPorBulto, BigDecimal valorDeclarado) { }
+    private static final class Carga {
+        private int unidadesBebida;
+        private BigDecimal pesoPersonalizado = BigDecimal.ZERO;
+        private long volumenPersonalizado;
+        private int anchoPersonalizado;
+        private int largoPersonalizado;
+        private int altoPersonalizado;
+    }
     public record OpcionEnvio(String id, String nombre, BigDecimal costo) { }
 }

@@ -70,6 +70,27 @@ public class Producto {
     @Min(value = 0, message = "El stock no puede ser negativo")
     private Integer stock = 0;
 
+    @NotNull(message = "Las unidades físicas por producto son obligatorias")
+    @Min(value = 1, message = "Las unidades físicas por producto deben ser al menos 1")
+    @Column(name = "unidades_por_producto", nullable = false)
+    private Integer unidadesPorProducto = 1;
+
+    @DecimalMin(value = "0.1", message = "El peso de envío debe ser mayor que cero")
+    @Column(name = "peso_envio_kg", precision = 8, scale = 3)
+    private BigDecimal pesoEnvioKg;
+
+    @Min(value = 1, message = "El ancho de envío debe ser mayor que cero")
+    @Column(name = "ancho_envio_cm")
+    private Integer anchoEnvioCm;
+
+    @Min(value = 1, message = "El largo de envío debe ser mayor que cero")
+    @Column(name = "largo_envio_cm")
+    private Integer largoEnvioCm;
+
+    @Min(value = 1, message = "El alto de envío debe ser mayor que cero")
+    @Column(name = "alto_envio_cm")
+    private Integer altoEnvioCm;
+
     @DecimalMin(value = "0.0", message = "El porcentaje de alcohol no puede ser negativo")
     @Column(precision = 4, scale = 2)
     private BigDecimal abv;
@@ -120,6 +141,9 @@ public class Producto {
         }
         if (stock == null) {
             stock = 0;
+        }
+        if (unidadesPorProducto == null) {
+            unidadesPorProducto = 1;
         }
         if (activo == null) {
             activo = true;
@@ -200,6 +224,23 @@ public class Producto {
     public void setStock(Integer stock) {
         this.stock = stock;
     }
+
+    public Integer getUnidadesPorProducto() {
+        return unidadesPorProducto;
+    }
+
+    public void setUnidadesPorProducto(Integer unidadesPorProducto) {
+        this.unidadesPorProducto = unidadesPorProducto;
+    }
+
+    public BigDecimal getPesoEnvioKg() { return pesoEnvioKg; }
+    public void setPesoEnvioKg(BigDecimal pesoEnvioKg) { this.pesoEnvioKg = pesoEnvioKg; }
+    public Integer getAnchoEnvioCm() { return anchoEnvioCm; }
+    public void setAnchoEnvioCm(Integer anchoEnvioCm) { this.anchoEnvioCm = anchoEnvioCm; }
+    public Integer getLargoEnvioCm() { return largoEnvioCm; }
+    public void setLargoEnvioCm(Integer largoEnvioCm) { this.largoEnvioCm = largoEnvioCm; }
+    public Integer getAltoEnvioCm() { return altoEnvioCm; }
+    public void setAltoEnvioCm(Integer altoEnvioCm) { this.altoEnvioCm = altoEnvioCm; }
 
     public BigDecimal getAbv() {
         return abv;

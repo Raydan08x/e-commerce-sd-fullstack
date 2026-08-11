@@ -20,6 +20,8 @@ Flyway ejecuta en orden los archivos de `db/migration`:
 1. `V1__modelo_relacional_definitivo.sql` crea el esquema completo en instalaciones nuevas.
 2. `V2__evolucion_modelo_anterior.sql` completa una base creada con el modelo anterior.
 3. `V3__catalogo_inicial.sql` carga el catálogo inicial directamente en MySQL.
+4. `V4__confirmacion_correo_usuarios.sql` agrega el estado y token de verificación del correo.
+5. `V5__unidades_fisicas_para_envio.sql` distingue unidades, 4-packs y cajas para cotizar bultos reales.
 
 `setup-ecommerce-sd.sql` se mantiene como punto de entrada manual para MySQL Workbench.
 En ejecución normal, Spring Boot aplica las migraciones automáticamente.

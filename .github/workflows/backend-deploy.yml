@@ -29,6 +29,19 @@ jobs:
       - name: Descargar repositorio
         uses: actions/checkout@v6
 
+      - name: Configurar Java 21
+        uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: "21"
+          cache: gradle
+
+      - name: Ejecutar pruebas del backend
+        shell: bash
+        run: |
+          cd backend
+          ./gradlew clean test --no-daemon
+
       - name: Verificar variables
         shell: bash
         run: |
@@ -164,8 +177,36 @@ jobs:
                 "value": "${{ secrets.BOLD_CURRENCY }}"
               },
               {
+                "name": "BOLD_IDENTITY_KEY",
+                "value": "9v0NpPhXXDnWItnMs1NZIQhYdXvV9T_Z6ud00VPiMR0"
+              },
+              {
+                "name": "MAIL_HOST",
+                "value": "${{ secrets.MAIL_HOST }}"
+              },
+              {
+                "name": "MAIL_PORT",
+                "value": "${{ secrets.MAIL_PORT }}"
+              },
+              {
+                "name": "MAIL_USERNAME",
+                "value": "${{ secrets.MAIL_USERNAME }}"
+              },
+              {
+                "name": "MAIL_PASSWORD",
+                "value": "${{ secrets.MAIL_PASSWORD }}"
+              },
+              {
+                "name": "MAIL_FROM",
+                "value": "${{ secrets.MAIL_FROM }}"
+              },
+              {
+                "name": "APP_PUBLIC_URL",
+                "value": "${{ secrets.APP_PUBLIC_URL }}"
+              },
+              {
                 "name": "MIPAQUETE_BASE_URL",
-                "value": "${{ secrets.MIPAQUETE_BASE_URL }}"
+                "value": "https://api-v2.dev.mpr.mipaquete.com"
               },
               {
                 "name": "MIPAQUETE_API_KEY",
@@ -188,6 +229,14 @@ jobs:
                 "value": "${{ secrets.MIPAQUETE_REQUEST_PICKUP }}"
               },
               {
+                "name": "MIPAQUETE_FORBIDDEN_PRODUCT",
+                "value": "${{ secrets.MIPAQUETE_FORBIDDEN_PRODUCT }}"
+              },
+              {
+                "name": "MIPAQUETE_CREATE_SHIPMENT_ENABLED",
+                "value": "false"
+              },
+              {
                 "name": "MIPAQUETE_SENDER_EMAIL",
                 "value": "${{ secrets.MIPAQUETE_SENDER_EMAIL }}"
               },
@@ -206,6 +255,10 @@ jobs:
               {
                 "name": "MIPAQUETE_SENDER_NAME",
                 "value": "${{ secrets.MIPAQUETE_SENDER_NAME }}"
+              },
+              {
+                "name": "MIPAQUETE_SENDER_SURNAME",
+                "value": "${{ secrets.MIPAQUETE_SENDER_SURNAME }}"
               },
               {
                 "name": "MIPAQUETE_SENDER_ADDRESS",

@@ -7,7 +7,7 @@ import {
     normalizarProducto,
     obtenerSesion,
     productoParaApi
-} from './api.js?v=20260810-2';
+} from './api.js?v=20260810-3';
 
 window.toastManager = new ToastManager();
 
@@ -454,6 +454,11 @@ async function agregarProducto() {
         description: description ? description.value.trim() : '',
         price: price ? Number(price.value) : 0,
         stock: Number(document.getElementById("stock")?.value || 0),
+        unidadesPorProducto: Number(document.getElementById("unidadesPorProducto")?.value || 1),
+        pesoEnvioKg: document.getElementById("pesoEnvioKg")?.value || "",
+        anchoEnvioCm: document.getElementById("anchoEnvioCm")?.value || "",
+        largoEnvioCm: document.getElementById("largoEnvioCm")?.value || "",
+        altoEnvioCm: document.getElementById("altoEnvioCm")?.value || "",
         abv: abv ? abv.value.trim() : '',
         ibu: ibu ? ibu.value.trim() : '',
         image: (image ? image.value.trim() : '') || IMAGEN_PLACEHOLDER,
@@ -533,6 +538,11 @@ async function actualizarProducto() { // Actualiza un producto existente.
         description: description ? description.value.trim() : '',
         price: price ? Number(price.value) : 0,
         stock: Number(document.getElementById("stock")?.value || 0),
+        unidadesPorProducto: Number(document.getElementById("unidadesPorProducto")?.value || 1),
+        pesoEnvioKg: document.getElementById("pesoEnvioKg")?.value || "",
+        anchoEnvioCm: document.getElementById("anchoEnvioCm")?.value || "",
+        largoEnvioCm: document.getElementById("largoEnvioCm")?.value || "",
+        altoEnvioCm: document.getElementById("altoEnvioCm")?.value || "",
         abv: abv ? abv.value.trim() : '',
         ibu: ibu ? ibu.value.trim() : '',
         image: nuevaUrlImagen,
@@ -608,6 +618,12 @@ async function editarProducto(idProducto) {
     if (price) price.value = productoEncontrado.price || 0;
     const stock = document.getElementById("stock");
     if (stock) stock.value = productoEncontrado.stock || 0;
+    const unidadesPorProducto = document.getElementById("unidadesPorProducto");
+    if (unidadesPorProducto) unidadesPorProducto.value = productoEncontrado.unidadesPorProducto || 1;
+    for (const campo of ["pesoEnvioKg", "anchoEnvioCm", "largoEnvioCm", "altoEnvioCm"]) {
+        const elemento = document.getElementById(campo);
+        if (elemento) elemento.value = productoEncontrado[campo] ?? "";
+    }
     if (abv) abv.value = productoEncontrado.abv || '';
     if (ibu) ibu.value = productoEncontrado.ibu || '';
     if (image) image.value = productoEncontrado.image || '';

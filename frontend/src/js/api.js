@@ -91,7 +91,12 @@ export function normalizarProducto(producto) {
         characteristics: producto.caracteristicas || {},
         process: producto.proceso || "",
         maridaje: producto.maridaje || [],
-        stock: Number(producto.stock || 0)
+        stock: Number(producto.stock || 0),
+        unidadesPorProducto: Number(producto.unidadesPorProducto || 1),
+        pesoEnvioKg: producto.pesoEnvioKg == null ? "" : Number(producto.pesoEnvioKg),
+        anchoEnvioCm: producto.anchoEnvioCm ?? "",
+        largoEnvioCm: producto.largoEnvioCm ?? "",
+        altoEnvioCm: producto.altoEnvioCm ?? ""
     };
 }
 
@@ -106,6 +111,11 @@ export function productoParaApi(producto, categoriaId) {
         tipoCerveza: null,
         estiloCerveza: null,
         stock: Number(producto.stock ?? 0),
+        unidadesPorProducto: Number(producto.unidadesPorProducto ?? 1),
+        pesoEnvioKg: producto.pesoEnvioKg === "" ? null : Number(producto.pesoEnvioKg),
+        anchoEnvioCm: producto.anchoEnvioCm === "" ? null : Number(producto.anchoEnvioCm),
+        largoEnvioCm: producto.largoEnvioCm === "" ? null : Number(producto.largoEnvioCm),
+        altoEnvioCm: producto.altoEnvioCm === "" ? null : Number(producto.altoEnvioCm),
         abv: producto.abv ? Number(String(producto.abv).replace("%", "")) : null,
         ibu: producto.ibu ? Number(producto.ibu) : null,
         imagenUrl: producto.image,
@@ -169,4 +179,11 @@ export const enviosApi = {
 export const pedidosApi = {
     crear: datos => api("/pedidos", { method: "POST", body: JSON.stringify(datos) }),
     listar: () => api("/pedidos")
+};
+
+export const pagosApi = {
+    confirmarBold: referencia => api(
+        `/pagos/bold/ordenes/${encodeURIComponent(referencia)}/confirmacion`,
+        { method: "POST" }
+    )
 };
