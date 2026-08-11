@@ -1,6 +1,6 @@
-import { ProductDetailsModal } from './components/ProductDetailsModal.js?v=20260810-2';
-import { agregarProducto } from './carritoStorage.js?v=20260715-3';
-import { catalogoApi } from './api.js?v=20260810-2';
+import { ProductDetailsModal } from './components/ProductDetailsModal.js?v=20260811-1';
+import { agregarProducto } from './carritoStorage.js?v=20260811-1';
+import { catalogoApi } from './api.js?v=20260811-1';
 
 const IMAGEN_PLACEHOLDER = "https://placehold.co/600x400/222223/B3A269?text=Imagen+Pendiente";
 

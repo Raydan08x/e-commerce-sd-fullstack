@@ -1,4 +1,4 @@
-import { cerrarSesion, obtenerSesion } from "../api.js?v=20260810-4";
+import { cerrarSesion, obtenerSesion } from "../api.js?v=20260811-1";
 
 export class Navbar {
   constructor() {

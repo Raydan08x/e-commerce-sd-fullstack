@@ -1,6 +1,6 @@
-import { obtenerCarrito, vaciarCarrito } from './carritoStorage.js?v=20260810-1';
-import { BOLD_CONFIG } from './config/bold.js?v=20260715-2';
-import { api, pagosApi } from './api.js?v=20260810-3';
+import { obtenerCarrito, vaciarCarrito } from './carritoStorage.js?v=20260811-1';
+import { BOLD_CONFIG } from './config/bold.js?v=20260811-1';
+import { api, pagosApi } from './api.js?v=20260811-1';
 
 const BOLD_LIBRARY_URL = 'https://checkout.bold.co/library/boldPaymentButton.js';
 const CLAVE_PAGO_PENDIENTE = 'pagoBoldPendienteSierraDorada';

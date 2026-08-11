@@ -2,8 +2,8 @@ import {
     actualizarCantidad,
     eliminarProducto,
     obtenerCarrito
-} from "./carritoStorage.js?v=20260715-3";
-import { enviosApi, obtenerSesion, pedidosApi } from "./api.js?v=20260810-2";
+} from "./carritoStorage.js?v=20260811-1";
+import { enviosApi, obtenerSesion, pedidosApi } from "./api.js?v=20260811-1";
 
 const contenedor = document.getElementById("contenedorCarrito");
 const subtotalEl = document.getElementById("subtotalCarrito");

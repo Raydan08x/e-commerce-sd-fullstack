@@ -2,7 +2,7 @@ import {
     obtenerCarrito,
     actualizarCantidad,
     eliminarProducto
-} from '../carritoStorage.js?v=20260715-3';
+} from '../carritoStorage.js?v=20260811-1';
 
 export class CartSidebar {
     constructor() {
