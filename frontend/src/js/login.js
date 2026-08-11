@@ -1,4 +1,4 @@
-import { authApi, guardarSesion } from "./api.js?v=20260810-4";
+import { authApi, guardarSesion } from "./api.js?v=20260811-1";
 
 const form = document.getElementById("formLogin");
 const usuarioInput = document.getElementById("usuario");

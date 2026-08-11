@@ -1,4 +1,4 @@
-import { formulariosApi } from "./api.js?v=20260810-4";
+import { formulariosApi } from "./api.js?v=20260811-1";
 
 const form = document.getElementById("newsletterForm");
 const emailInput = document.getElementById("newsletterEmail");

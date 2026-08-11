@@ -1,4 +1,4 @@
-import { authApi } from "./api.js?v=20260810-4";
+import { authApi } from "./api.js?v=20260811-1";
 
 const form = document.getElementById("formRegistro");
 const $ = id => document.getElementById(id);

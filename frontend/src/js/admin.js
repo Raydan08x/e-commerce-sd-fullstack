@@ -7,7 +7,7 @@ import {
     normalizarProducto,
     obtenerSesion,
     productoParaApi
-} from './api.js?v=20260810-3';
+} from './api.js?v=20260811-1';
 
 window.toastManager = new ToastManager();
 
