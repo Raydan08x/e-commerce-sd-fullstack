@@ -2,6 +2,7 @@ package com.sierra_dorada.controller;
 
 import com.sierra_dorada.model.Producto;
 import com.sierra_dorada.service.ProductoService;
+import io.swagger.v3.oas.annotations.security.SecurityRequirements;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -27,6 +28,7 @@ public class ProductoController {
     }
 
     @GetMapping
+    @SecurityRequirements
     public List<Producto> listar(
         @RequestParam(defaultValue = "true") boolean soloActivos,
         @RequestParam(required = false) String buscar,
@@ -36,6 +38,7 @@ public class ProductoController {
     }
 
     @GetMapping("/{id}")
+    @SecurityRequirements
     public Producto obtener(@PathVariable Integer id) {
         return servicio.obtener(id);
     }

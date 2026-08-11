@@ -3,6 +3,7 @@ package com.sierra_dorada.controller;
 import com.sierra_dorada.model.MensajeContacto;
 import com.sierra_dorada.repository.MensajeContactoRepository;
 import com.sierra_dorada.repository.UsuarioRepository;
+import io.swagger.v3.oas.annotations.security.SecurityRequirements;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -27,6 +28,7 @@ public class ContactoController {
     }
 
     @PostMapping
+    @SecurityRequirements
     public ResponseEntity<MensajeContacto> registrar(@Valid @RequestBody MensajeContacto mensaje,
                                                        Authentication autenticacion) {
         mensaje.setId(null);

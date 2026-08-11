@@ -32,6 +32,9 @@ cd backend
 
 Frontend de producción: `https://shop.sierradorada.co`.
 
+Swagger administrativo: `https://shop.sierradorada.co/swagger-ui.html` (requiere
+las credenciales de una cuenta activa y verificada con rol `ADMIN`).
+
 ## Raspberry Pi
 
 El despliegue definitivo corre con Docker Compose en

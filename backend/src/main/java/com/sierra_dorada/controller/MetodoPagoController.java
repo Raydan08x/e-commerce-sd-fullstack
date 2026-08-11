@@ -3,6 +3,7 @@ package com.sierra_dorada.controller;
 import com.sierra_dorada.exception.RecursoNoEncontradoException;
 import com.sierra_dorada.model.MetodoPago;
 import com.sierra_dorada.repository.MetodoPagoRepository;
+import io.swagger.v3.oas.annotations.security.SecurityRequirements;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -28,11 +29,13 @@ public class MetodoPagoController {
     }
 
     @GetMapping
+    @SecurityRequirements
     public List<MetodoPago> listar(@RequestParam(defaultValue = "true") boolean soloActivos) {
         return soloActivos ? repositorio.findByActivoTrue() : repositorio.findAll();
     }
 
     @GetMapping("/{id}")
+    @SecurityRequirements
     public MetodoPago obtener(@PathVariable Integer id) {
         return buscar(id);
     }

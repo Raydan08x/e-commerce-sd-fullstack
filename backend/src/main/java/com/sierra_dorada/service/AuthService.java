@@ -29,18 +29,21 @@ public class AuthService {
     private final UsuarioService servicioUsuarios;
     private final JwtService servicioJwt;
     private final CorreoVerificacionService correos;
+    private final AdministradorPrincipalService administradorPrincipal;
 
     public AuthService(
             AuthenticationManager gestorAutenticacion,
             UsuarioRepository usuarios,
             UsuarioService servicioUsuarios,
             JwtService servicioJwt,
-            CorreoVerificacionService correos) {
+            CorreoVerificacionService correos,
+            AdministradorPrincipalService administradorPrincipal) {
         this.gestorAutenticacion = gestorAutenticacion;
         this.usuarios = usuarios;
         this.servicioUsuarios = servicioUsuarios;
         this.servicioJwt = servicioJwt;
         this.correos = correos;
+        this.administradorPrincipal = administradorPrincipal;
     }
 
     public AuthResponse login(LoginRequest solicitud) {
@@ -109,6 +112,7 @@ public class AuthService {
         }
         usuario.setEmailVerificado(true);
         usuario.setActivo(true);
+        administradorPrincipal.asignarRolSiCorresponde(usuario);
         return crearRespuesta(usuarios.save(usuario));
     }
 

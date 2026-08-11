@@ -3,6 +3,7 @@ package com.sierra_dorada.controller;
 import com.sierra_dorada.exception.RecursoNoEncontradoException;
 import com.sierra_dorada.model.Categoria;
 import com.sierra_dorada.repository.CategoriaRepository;
+import io.swagger.v3.oas.annotations.security.SecurityRequirements;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -30,12 +31,14 @@ public class CategoriaController {
     }
 
     @GetMapping
+    @SecurityRequirements
     @Cacheable("categorias")
     public List<Categoria> listar() {
         return repositorio.findAll();
     }
 
     @GetMapping("/{id}")
+    @SecurityRequirements
     @Cacheable(value = "categorias", key = "#id")
     public Categoria obtener(@PathVariable Integer id) {
         return buscar(id);
