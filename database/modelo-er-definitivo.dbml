@@ -36,6 +36,11 @@ Table productos {
   tipo_cerveza varchar(100)
   estilo_cerveza varchar(100)
   stock int [not null]
+  unidades_por_producto int [not null, default: 1, note: '1 unidad, 4 por 4-pack, 24 por caja']
+  peso_envio_kg decimal(8,3)
+  ancho_envio_cm int
+  largo_envio_cm int
+  alto_envio_cm int
   abv decimal(4,2)
   ibu int
   imagen_url text

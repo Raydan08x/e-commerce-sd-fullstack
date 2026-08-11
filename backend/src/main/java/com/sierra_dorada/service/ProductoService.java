@@ -63,8 +63,21 @@ public class ProductoService {
     }
 
     private Producto guardar(Producto producto) {
+        validarEmpaque(producto);
         producto.setCategoria(resolverCategoria(producto));
         return productos.save(producto);
+    }
+
+    private void validarEmpaque(Producto producto) {
+        long camposConfigurados = java.util.stream.Stream.of(
+                producto.getPesoEnvioKg(), producto.getAnchoEnvioCm(),
+                producto.getLargoEnvioCm(), producto.getAltoEnvioCm())
+            .filter(java.util.Objects::nonNull)
+            .count();
+        if (camposConfigurados != 0 && camposConfigurados != 4) {
+            throw new IllegalArgumentException(
+                "El empaque personalizado requiere peso, ancho, largo y alto");
+        }
     }
 
     private Categoria resolverCategoria(Producto producto) {

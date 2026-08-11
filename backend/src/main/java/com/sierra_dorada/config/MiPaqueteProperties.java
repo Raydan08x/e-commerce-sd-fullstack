@@ -21,6 +21,7 @@ public class MiPaqueteProperties {
     private String userId;
     private boolean requestPickup;
     private boolean forbiddenProduct;
+    private boolean createShipmentEnabled;
     private String webhookSecret;
 
     public String getBaseUrl() { return baseUrl; }
@@ -53,6 +54,10 @@ public class MiPaqueteProperties {
     public void setRequestPickup(boolean requestPickup) { this.requestPickup = requestPickup; }
     public boolean isForbiddenProduct() { return forbiddenProduct; }
     public void setForbiddenProduct(boolean forbiddenProduct) { this.forbiddenProduct = forbiddenProduct; }
+    public boolean isCreateShipmentEnabled() { return createShipmentEnabled; }
+    public void setCreateShipmentEnabled(boolean createShipmentEnabled) {
+        this.createShipmentEnabled = createShipmentEnabled;
+    }
     public String getWebhookSecret() { return webhookSecret; }
     public void setWebhookSecret(String webhookSecret) { this.webhookSecret = webhookSecret; }
 }

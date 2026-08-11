@@ -2,12 +2,15 @@ package com.sierra_dorada;
 
 import com.jayway.jsonpath.JsonPath;
 import com.sierra_dorada.model.Rol;
+import com.sierra_dorada.model.Producto;
 import com.sierra_dorada.model.Usuario;
+import com.sierra_dorada.repository.ProductoRepository;
 import com.sierra_dorada.repository.UsuarioRepository;
 import com.sierra_dorada.security.JwtService;
 import com.sierra_dorada.service.MiPaqueteClient;
 import java.util.List;
 import java.util.Map;
+import java.math.BigDecimal;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -23,6 +26,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.mockito.Mockito.clearInvocations;
+import static org.mockito.Mockito.anyMap;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import org.mockito.ArgumentCaptor;
@@ -43,6 +48,9 @@ class AuthIntegrationTests {
 
     @Autowired
     private UsuarioRepository usuarios;
+
+    @Autowired
+    private ProductoRepository productos;
 
     @Autowired
     private PasswordEncoder codificadorContrasenas;
@@ -78,6 +86,36 @@ class AuthIntegrationTests {
         mvc.perform(get("/api/envios/ubicaciones").param("q", "z"))
             .andExpect(status().isOk())
             .andExpect(jsonPath("$.length()").value(0));
+    }
+
+    @Test
+    void calculaBultosRealesParaUnidadPackYCajaSinMultiplicarElPeso() throws Exception {
+        Producto unidad = productoEnvio("QA-U1", 14_000, 1);
+        Producto pack = productoEnvio("QA-P4", 50_000, 4);
+        Producto caja = productoEnvio("QA-C24", 192_000, 24);
+        Producto hoodie = productoEnvio("QA-M1", 120_000, 1);
+        hoodie.setPesoEnvioKg(new BigDecimal("1.2"));
+        hoodie.setAnchoEnvioCm(32);
+        hoodie.setLargoEnvioCm(38);
+        hoodie.setAltoEnvioCm(12);
+        productos.save(hoodie);
+        when(miPaquete.cotizar(anyMap())).thenReturn(List.of());
+        clearInvocations(miPaquete);
+
+        cotizar(unidad.getId(), 3);
+        cotizar(pack.getId(), 3);
+        cotizar(caja.getId(), 2);
+        cotizar(hoodie.getId(), 1);
+
+        @SuppressWarnings("unchecked")
+        ArgumentCaptor<Map<String, Object>> captor = ArgumentCaptor.forClass(Map.class);
+        verify(miPaquete, times(4)).cotizar(captor.capture());
+        List<Map<String, Object>> solicitudes = captor.getAllValues();
+
+        assertPaquete(solicitudes.get(0), 1, 18, 18, 25, 3);
+        assertPaquete(solicitudes.get(1), 1, 18, 51, 25, 9);
+        assertPaquete(solicitudes.get(2), 2, 29, 42, 27, 18);
+        assertPaquete(solicitudes.get(3), 1, 32, 38, 14, 2);
     }
 
     @Test
@@ -239,6 +277,34 @@ class AuthIntegrationTests {
         usuario.setEmailVerificado(true);
         usuarios.save(usuario);
         return servicioJwt.generar(usuario);
+    }
+
+    private Producto productoEnvio(String codigo, int precio, int unidades) {
+        Producto producto = new Producto();
+        producto.setCodigo(codigo);
+        producto.setNombre("Producto de envío " + codigo);
+        producto.setPrecio(BigDecimal.valueOf(precio));
+        producto.setStock(100);
+        producto.setUnidadesPorProducto(unidades);
+        producto.setActivo(true);
+        return productos.save(producto);
+    }
+
+    private void cotizar(Integer productoId, int cantidad) throws Exception {
+        mvc.perform(post("/api/envios/cotizaciones")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("{\"destinoCodigo\":\"25899000\",\"detalles\":[{\"productoId\":"
+                    + productoId + ",\"cantidad\":" + cantidad + "}]}"))
+            .andExpect(status().isOk());
+    }
+
+    private void assertPaquete(Map<String, Object> solicitud, int cantidad, int ancho,
+                               int largo, int alto, int peso) {
+        assertEquals(cantidad, solicitud.get("quantity"));
+        assertEquals(ancho, solicitud.get("width"));
+        assertEquals(largo, solicitud.get("length"));
+        assertEquals(alto, solicitud.get("height"));
+        assertEquals(peso, solicitud.get("weight"));
     }
 
     @Test

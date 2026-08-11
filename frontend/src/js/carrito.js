@@ -29,6 +29,9 @@ const checkoutSteps = [...document.querySelectorAll("[data-checkout-step]")];
 const resumenDestinatario = document.getElementById("resumenDestinatario");
 const resumenDireccion = document.getElementById("resumenDireccion");
 const resumenTransportadora = document.getElementById("resumenTransportadora");
+const resultadoPago = document.getElementById("resultadoPago");
+const contenidoCarrito = document.getElementById("contenidoCarrito");
+const encabezadoCarrito = document.querySelector(".catalogo-header");
 
 let cotizacionSeleccionada = null;
 let pasoCheckout = 1;
@@ -367,6 +370,65 @@ checkoutSteps.forEach(indicador => {
 });
 
 window.addEventListener("resize", ajustarAltoCheckout);
+
+function mostrarResultadoPago(resultado) {
+    const pedido = resultado.pedido || {};
+    const confirmado = Boolean(resultado.confirmado);
+    const finalFallido = ["REJECTED", "FAILED", "VOIDED"].includes(resultado.estadoPago);
+    const clase = confirmado ? "" : finalFallido ? "is-error" : "is-pending";
+    const icono = confirmado ? "bi-check-lg" : finalFallido ? "bi-x-lg" : "bi-hourglass-split";
+    const titulo = confirmado ? "Compra realizada con éxito"
+        : finalFallido ? "El pago no fue aprobado" : "Estamos confirmando tu pago";
+    const productos = Array.isArray(pedido.productos) ? pedido.productos : [];
+    const seguimiento = confirmado ? `
+        <div class="resultado-pago__seguimiento">
+            <strong>Seguimiento del envío</strong>
+            <span>Estado: ${escaparHtml(pedido.estadoEnvio || "PENDIENTE")}</span>
+            ${pedido.codigoMiPaquete ? `<span>Código Mi Paquete: ${escaparHtml(pedido.codigoMiPaquete)}</span>` : ""}
+            ${pedido.numeroGuia ? `<span>Guía: ${escaparHtml(pedido.numeroGuia)}</span>` : ""}
+            ${pedido.codigoMiPaquete || pedido.numeroGuia ? `
+                <a href="${escaparHtml(pedido.urlSeguimiento || "https://app.mipaquete.com/seguimiento-envio")}" target="_blank" rel="noopener noreferrer">
+                    Abrir seguimiento de Mi Paquete
+                </a>` : '<span>La guía real está desactivada mientras Mi Paquete permanece en pruebas.</span>'}
+        </div>` : "";
+    resultadoPago.className = `resultado-pago ${clase}`.trim();
+    resultadoPago.innerHTML = `
+        <div class="resultado-pago__encabezado">
+            <span class="resultado-pago__icono"><i class="bi ${icono}"></i></span>
+            <div><h1>${titulo}</h1><p>${escaparHtml(resultado.mensaje || "")}</p></div>
+        </div>
+        <div class="resultado-pago__meta">
+            <div><span>Orden del pedido</span><strong>#${escaparHtml(pedido.id || "-")}</strong></div>
+            <div><span>Estado del pedido</span><strong>${escaparHtml(pedido.estado || "Pendiente")}</strong></div>
+            <div><span>Estado del pago</span><strong>${escaparHtml(resultado.estadoPago || "PENDIENTE")}</strong></div>
+        </div>
+        ${productos.length ? `<ul class="resultado-pago__productos">${productos.map(producto => `
+            <li><span>${escaparHtml(producto.nombre)} × ${Number(producto.cantidad)}</span>
+                <strong>${moneda(producto.subtotal)}</strong></li>`).join("")}</ul>` : ""}
+        <div class="resultado-pago__totales">
+            <div><span>Subtotal</span><strong>${moneda(pedido.subtotal || 0)}</strong></div>
+            <div><span>Envío</span><strong>${moneda(pedido.costoEnvio || 0)}</strong></div>
+            <div><span>Total pagado</span><strong>${moneda(pedido.total || 0)}</strong></div>
+        </div>
+        ${seguimiento}
+        <div class="resultado-pago__acciones">
+            ${!confirmado && !finalFallido ? '<button id="btnReintentarConfirmacion" class="btn btn-dorado" type="button">Volver a comprobar</button>' : ""}
+            <a class="btn btn-outline-light" href="productos.html">Seguir comprando</a>
+        </div>`;
+    resultadoPago.hidden = false;
+    if (confirmado) {
+        encabezadoCarrito.hidden = true;
+        contenidoCarrito.hidden = true;
+    }
+    resultadoPago.scrollIntoView({ behavior: "smooth", block: "start" });
+    document.getElementById("btnReintentarConfirmacion")?.addEventListener("click", () => {
+        window.dispatchEvent(new CustomEvent("sierra-dorada:reintentar-confirmacion-bold"));
+    });
+}
+
+window.addEventListener("sierra-dorada:resultado-pago", event => {
+    mostrarResultadoPago(event.detail);
+});
 
 botonPagar.addEventListener("click", async event => {
     if (botonPagar.dataset.pedidoId) return;

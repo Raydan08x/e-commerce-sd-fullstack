@@ -1,4 +1,4 @@
-import { formulariosApi } from "./api.js";
+import { formulariosApi } from "./api.js?v=20260810-4";
 
 const formulario = document.getElementById("form-contacto");
 const telefono = document.getElementById("telefono");
@@ -31,4 +31,3 @@ Correo: ${datos.email}${datos.mensaje ? `\nMensaje: ${datos.mensaje}` : ""}`;
         boton.disabled = false;
     }
 });
-

@@ -29,6 +29,21 @@ jobs:
       - name: Descargar repositorio
         uses: actions/checkout@v6
 
+      - name: Configurar Java 21
+        uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: "21"
+          cache: gradle
+
+      - name: Probar backend y sintaxis frontend
+        shell: bash
+        run: |
+          cd backend
+          ./gradlew clean test --no-daemon
+          cd ..
+          find frontend/src/js -type f -name '*.js' -print0 | xargs -0 -n1 node --check
+
       - name: Habilitar compilacion ARM64
         uses: docker/setup-qemu-action@v3
 
@@ -82,8 +97,27 @@ jobs:
           JWT_SECRET: ${{ secrets.JWT_SECRET }}
           PI_MYSQL_PASSWORD: ${{ secrets.PI_MYSQL_PASSWORD }}
           PI_MYSQL_ROOT_PASSWORD: ${{ secrets.PI_MYSQL_ROOT_PASSWORD }}
+          CORS_ALLOWED_ORIGINS: ${{ secrets.CORS_ALLOWED_ORIGINS }}
+          BOLD_SECRET_KEY: ${{ secrets.BOLD_SECRET_KEY }}
+          MAIL_USERNAME: ${{ secrets.MAIL_USERNAME }}
+          MAIL_PASSWORD: ${{ secrets.MAIL_PASSWORD }}
+          MIPAQUETE_BASE_URL: ${{ secrets.MIPAQUETE_BASE_URL }}
+          MIPAQUETE_API_KEY: ${{ secrets.MIPAQUETE_API_KEY }}
+          MIPAQUETE_SESSION_TRACKER: ${{ secrets.MIPAQUETE_SESSION_TRACKER }}
+          MIPAQUETE_ORIGIN_DANE_CODE: ${{ secrets.MIPAQUETE_ORIGIN_DANE_CODE }}
+          MIPAQUETE_SENDER_EMAIL: ${{ secrets.MIPAQUETE_SENDER_EMAIL }}
+          MIPAQUETE_SENDER_PHONE: ${{ secrets.MIPAQUETE_SENDER_PHONE }}
+          MIPAQUETE_SENDER_DOCUMENT: ${{ secrets.MIPAQUETE_SENDER_DOCUMENT }}
+          MIPAQUETE_SENDER_ADDRESS: ${{ secrets.MIPAQUETE_SENDER_ADDRESS }}
+          MIPAQUETE_USER_ID: ${{ secrets.MIPAQUETE_USER_ID }}
+          MIPAQUETE_WEBHOOK_SECRET: ${{ secrets.MIPAQUETE_WEBHOOK_SECRET }}
         run: |
-          for nombre in DB_URL DB_USERNAME DB_PASSWORD JWT_SECRET PI_MYSQL_PASSWORD PI_MYSQL_ROOT_PASSWORD; do
+          for nombre in DB_URL DB_USERNAME DB_PASSWORD JWT_SECRET PI_MYSQL_PASSWORD PI_MYSQL_ROOT_PASSWORD \
+            CORS_ALLOWED_ORIGINS BOLD_SECRET_KEY MAIL_USERNAME MAIL_PASSWORD \
+            MIPAQUETE_BASE_URL MIPAQUETE_API_KEY MIPAQUETE_SESSION_TRACKER \
+            MIPAQUETE_ORIGIN_DANE_CODE MIPAQUETE_SENDER_EMAIL MIPAQUETE_SENDER_PHONE \
+            MIPAQUETE_SENDER_DOCUMENT MIPAQUETE_SENDER_ADDRESS MIPAQUETE_USER_ID \
+            MIPAQUETE_WEBHOOK_SECRET; do
             if [ -z "${!nombre}" ]; then
               echo "Falta configurar el secreto $nombre"
               exit 1
@@ -146,13 +180,15 @@ jobs:
             printf 'CORS_ALLOWED_ORIGINS=%s\n' "$CORS_ALLOWED_ORIGINS"
             printf 'BOLD_SECRET_KEY=%s\n' "$BOLD_SECRET_KEY"
             printf 'BOLD_CURRENCY=%s\n' "${BOLD_CURRENCY:-COP}"
+            printf 'BOLD_IDENTITY_KEY=%s\n' '9v0NpPhXXDnWItnMs1NZIQhYdXvV9T_Z6ud00VPiMR0'
+            printf 'BOLD_API_BASE_URL=%s\n' 'https://payments.api.bold.co'
             printf 'MAIL_HOST=%s\n' "${MAIL_HOST:-smtp.gmail.com}"
             printf 'MAIL_PORT=%s\n' "${MAIL_PORT:-587}"
             printf 'MAIL_USERNAME=%s\n' "$MAIL_USERNAME"
             printf 'MAIL_PASSWORD=%s\n' "$MAIL_PASSWORD"
             printf 'MAIL_FROM=%s\n' "${MAIL_FROM:-$MAIL_USERNAME}"
             printf 'APP_PUBLIC_URL=%s\n' "${APP_PUBLIC_URL:-https://shop.sierradorada.co}"
-            printf 'MIPAQUETE_BASE_URL=%s\n' "$MIPAQUETE_BASE_URL"
+            printf 'MIPAQUETE_BASE_URL=%s\n' 'https://api-v2.dev.mpr.mipaquete.com'
             printf 'MIPAQUETE_API_KEY=%s\n' "$MIPAQUETE_API_KEY"
             printf 'MIPAQUETE_SESSION_TRACKER=%s\n' "$MIPAQUETE_SESSION_TRACKER"
             printf 'MIPAQUETE_ORIGIN_COUNTRY_CODE=%s\n' "${MIPAQUETE_ORIGIN_COUNTRY_CODE:-170}"
@@ -166,7 +202,9 @@ jobs:
             printf 'MIPAQUETE_USER_ID=%s\n' "$MIPAQUETE_USER_ID"
             printf 'MIPAQUETE_REQUEST_PICKUP=%s\n' "${MIPAQUETE_REQUEST_PICKUP:-false}"
             printf 'MIPAQUETE_FORBIDDEN_PRODUCT=%s\n' 'false'
+            printf 'MIPAQUETE_CREATE_SHIPMENT_ENABLED=%s\n' 'false'
             printf 'MIPAQUETE_WEBHOOK_SECRET=%s\n' "$MIPAQUETE_WEBHOOK_SECRET"
+            printf 'MIPAQUETE_TRACKING_URL=%s\n' 'https://app.mipaquete.com/seguimiento-envio'
             printf 'PI_MYSQL_DATABASE=%s\n' 'ecommerce_sd'
             printf 'PI_MYSQL_USERNAME=%s\n' 'ecommerce'
             printf 'PI_MYSQL_PASSWORD=%s\n' "$PI_MYSQL_PASSWORD"

@@ -1,4 +1,4 @@
-import { formulariosApi } from "./api.js";
+import { formulariosApi } from "./api.js?v=20260810-4";
 
 const form = document.getElementById("newsletterForm");
 const emailInput = document.getElementById("newsletterEmail");
@@ -24,4 +24,3 @@ form?.addEventListener("submit", async event => {
         mostrar(error.message, "error");
     }
 });
-

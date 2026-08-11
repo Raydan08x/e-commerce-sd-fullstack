@@ -80,3 +80,7 @@ export function eliminarProducto(idProducto) {
 
     guardarCarrito(carrito);
 }
+
+export function vaciarCarrito() {
+    guardarCarrito([]);
+}

@@ -81,7 +81,8 @@ public class SecurityConfig {
                 .requestMatchers(HttpMethod.POST, "/api/envios/pedidos/*/guia").hasRole(ROL_ADMIN)
                 .requestMatchers(HttpMethod.PATCH, "/api/pedidos/*/estado").hasRole(ROL_ADMIN)
                 .requestMatchers(HttpMethod.DELETE, "/api/pedidos/**").hasRole(ROL_ADMIN)
-                .requestMatchers(HttpMethod.POST, "/api/pagos/bold/firma").authenticated()
+                .requestMatchers(HttpMethod.POST, "/api/pagos/bold/firma",
+                    "/api/pagos/bold/ordenes/*/confirmacion").authenticated()
                 .requestMatchers(HttpMethod.POST, "/api/pagos/bold/webhook").permitAll()
                 .requestMatchers("/api/pagos/**").hasRole(ROL_ADMIN)
                 .requestMatchers(HttpMethod.GET, RUTAS_CATALOGO).permitAll()
