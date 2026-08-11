@@ -1,4 +1,4 @@
-import { authApi } from "./api.js?v=20260811-1";
+import { authApi } from "./api.js?v=20260811-3";
 
 const form = document.getElementById("formRegistro");
 const $ = id => document.getElementById(id);
@@ -6,6 +6,34 @@ const fechaNacimiento = $("fechaNacimiento");
 const telefono = $("telefono");
 const mensajes = $("mensajesRegistro");
 const dialogo = $("terminosDialog");
+const CLAVE_BORRADOR_REGISTRO = "registroPendienteSierraDorada";
+const camposPersistidos = [
+    "nombre", "apellidos", "fechaNacimiento", "genero", "direccion", "telefono", "email",
+    "aceptaTerminos", "autorizaDatos", "autorizaComunicaciones"
+];
+
+function guardarBorradorRegistro() {
+    const borrador = {};
+    camposPersistidos.forEach(id => {
+        const campo = $(id);
+        borrador[id] = campo.type === "checkbox" ? campo.checked : campo.value;
+    });
+    sessionStorage.setItem(CLAVE_BORRADOR_REGISTRO, JSON.stringify(borrador));
+}
+
+function restaurarBorradorRegistro() {
+    try {
+        const borrador = JSON.parse(sessionStorage.getItem(CLAVE_BORRADOR_REGISTRO)) || {};
+        camposPersistidos.forEach(id => {
+            if (!(id in borrador)) return;
+            const campo = $(id);
+            if (campo.type === "checkbox") campo.checked = Boolean(borrador[id]);
+            else campo.value = borrador[id];
+        });
+    } catch {
+        sessionStorage.removeItem(CLAVE_BORRADOR_REGISTRO);
+    }
+}
 
 function fechaMaxima() {
     const fecha = new Date();
@@ -20,6 +48,9 @@ function mostrarErrores(errores) {
 }
 
 fechaNacimiento.max = fechaMaxima();
+restaurarBorradorRegistro();
+form.addEventListener("input", guardarBorradorRegistro);
+form.addEventListener("change", guardarBorradorRegistro);
 telefono.addEventListener("input", () => {
     const prefijo = telefono.value.trim().startsWith("+") ? "+" : "";
     telefono.value = prefijo + telefono.value.replace(/\D/g, "").slice(0, 15);
@@ -74,6 +105,7 @@ form.addEventListener("submit", async event => {
     boton.disabled = true;
     try {
         const respuesta = await authApi.registro(datos);
+        sessionStorage.removeItem(CLAVE_BORRADOR_REGISTRO);
         sessionStorage.setItem("ultimoRegistroSierraDorada", datos.email);
         mensajes.className = "alert alert-success mt-3";
         mensajes.textContent = respuesta.mensaje

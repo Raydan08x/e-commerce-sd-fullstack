@@ -176,6 +176,10 @@ export const enviosApi = {
     })
 };
 
+export const perfilApi = {
+    obtener: () => api("/perfil")
+};
+
 export const pedidosApi = {
     crear: datos => api("/pedidos", { method: "POST", body: JSON.stringify(datos) }),
     listar: () => api("/pedidos")

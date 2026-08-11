@@ -1,4 +1,4 @@
-import { authApi, guardarSesion } from "./api.js?v=20260811-2";
+import { authApi, guardarSesion } from "./api.js?v=20260811-3";
 
 const parametros = new URLSearchParams(window.location.search);
 const token = parametros.get("token");
@@ -34,7 +34,11 @@ async function verificar() {
         descripcion.textContent = "Tu identidad de correo fue confirmada correctamente.";
         mostrar("success", "Cuenta activada. Ingresando a Sierra Dorada…");
         setTimeout(() => {
-            window.location.href = sesion.rol === "admin" ? "admin.html" : "productos.html";
+            const regreso = sessionStorage.getItem("volverDespuesLogin");
+            sessionStorage.removeItem("volverDespuesLogin");
+            window.location.href = sesion.rol === "admin"
+                ? "admin.html"
+                : (regreso || "productos.html");
         }, 1200);
     } catch (error) {
         descripcion.textContent = "No pudimos confirmar la cuenta con este enlace.";
