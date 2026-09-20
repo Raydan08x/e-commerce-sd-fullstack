@@ -30,9 +30,9 @@ cd backend
 3. Sirva `frontend/` con un servidor HTTP estático.
 4. Para otra URL de API, defina `window.SIERRA_DORADA_API_URL` antes de cargar los módulos.
 
-Frontend de producción: `https://shop.sierradorada.co`.
+Frontend de producción: `https://sierradorada.co` (`https://shop.sierradorada.co` se conserva como alias).
 
-Swagger administrativo: `https://shop.sierradorada.co/swagger-ui.html` (requiere
+Swagger administrativo: `https://sierradorada.co/swagger-ui.html` (requiere
 las credenciales de una cuenta activa y verificada con rol `ADMIN`).
 
 ## Raspberry Pi

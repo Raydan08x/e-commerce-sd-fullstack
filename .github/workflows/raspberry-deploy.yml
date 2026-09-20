@@ -187,7 +187,7 @@ jobs:
             printf 'MAIL_USERNAME=%s\n' "$MAIL_USERNAME"
             printf 'MAIL_PASSWORD=%s\n' "$MAIL_PASSWORD"
             printf 'MAIL_FROM=%s\n' "${MAIL_FROM:-$MAIL_USERNAME}"
-            printf 'APP_PUBLIC_URL=%s\n' "${APP_PUBLIC_URL:-https://shop.sierradorada.co}"
+            printf 'APP_PUBLIC_URL=%s\n' "${APP_PUBLIC_URL:-https://sierradorada.co}"
             printf 'MIPAQUETE_BASE_URL=%s\n' 'https://api-v2.dev.mpr.mipaquete.com'
             printf 'MIPAQUETE_API_KEY=%s\n' "$MIPAQUETE_API_KEY"
             printf 'MIPAQUETE_SESSION_TRACKER=%s\n' "$MIPAQUETE_SESSION_TRACKER"
