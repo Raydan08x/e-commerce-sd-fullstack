@@ -10,7 +10,7 @@ Nginx la dirige al contenedor Spring Boot.
 
 El sitio de producción se publica automáticamente en:
 
-`https://shop.sierradorada.co`
+`https://sierradorada.co`
 
 En producción defina la URL antes de cargar los módulos, por ejemplo:
 

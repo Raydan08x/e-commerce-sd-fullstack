@@ -1,8 +1,8 @@
 # Tunel exclusivo del e-commerce
 
-Este servicio publica unicamente `shop.sierradorada.co` desde el puerto local
-`127.0.0.1:3103`. No reutiliza configuraciones, credenciales ni servicios de
-`sierradoradagastrobar.com`.
+Este servicio publica `sierradorada.co`, `www.sierradorada.co` y el alias
+`shop.sierradorada.co` desde el puerto local `127.0.0.1:3103`. El gastrobar
+usa su propio servicio y dominio en `gastro.sierradorada.co`.
 
 Archivos instalados en la Raspberry Pi:
 

@@ -5,6 +5,14 @@ no-autoupdate: true
 metrics: 127.0.0.1:20247
 
 ingress:
+  - hostname: sierradorada.co
+    service: http://127.0.0.1:3103
+    originRequest:
+      connectTimeout: 10s
+  - hostname: www.sierradorada.co
+    service: http://127.0.0.1:3103
+    originRequest:
+      connectTimeout: 10s
   - hostname: shop.sierradorada.co
     service: http://127.0.0.1:3103
     originRequest:
